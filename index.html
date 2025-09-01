@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ComplainEasy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      rel="shortcut icon"
+      href="logo.svg"
+      type="image/x-svg"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="styleForMobile.css" />
+    <!-- responsive for >= 768 -->
+    <link rel="stylesheet" href="heroSection.css" />
+    <!-- hero section -->
+    <link rel="stylesheet" href="choose.css" />
+    <!-- why choose section -->
+    <link rel="stylesheet" href="simpleSteps.css" />
+    <!-- simple steps section -->
+  </head>
+  <body>
+    <div class="main">
+      <!-- navbar of the website -->
+      <nav>
+        <!-- logo of the website -->
+        <div class="logo">
+          <!-- <img src="logo3.svg" alt=""> -->
+          <img src="logo.svg" alt="" />
+          <p>Complain<span>Easy</span></p>
+        </div>
+        <div class="navSection2">
+          <!-- authentication button [login] -->
+          <div class="userInfo">
+            <a href="authentication.html" class="login">Login</a>
+          </div>
+          <!-- menu bar of the navbar -->
+          <div class="menu" onclick="show()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="35"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-menu-2"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M4 6l16 0" />
+              <path d="M4 12l16 0" />
+              <path d="M4 18l16 0" />
+            </svg>
+          </div>
+        </div>
+      </nav>
+      <div class="menuDropdown">
+        <a href="#" class="quickLink"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="adminKey.html" class="quickLink"><i class="fas fa-user"></i><span>Admin</span></a>
+        <a href="#" class="quickLink"><i class="fas fa-file-lines"></i><span>Track</span></a>
+        <a href="#" class="quickLink"><i class="fas fa-phone"></i><span>Contact Us</span></a>
+        <a href="" class="logout">
+          <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+        </a>
+      </div>
+
+      <div class="section2">
+        <!-- hero section of the website -->
+        <div class="hero-section">
+          <h1>Your Voice, Our Action</h1>
+          <p>
+            Submit complaints, provide feedback, and make a difference. We're
+            here to ensure your concerns are heard and addressed with the
+            attention they deserve.
+          </p>
+          <div class="hero-buttons">
+            <a href="complainForm.html" class="btn btn-primary">File Complaint</a>
+            <a href="suggestion.html" class="btn btn-outline">Share Suggestion</a>
+          </div>
+        </div>
+        <div class="choose-section">
+          <section class="why-choose-section">
+            <h1 class="section-title">Why Choose ComplainEasy?</h1>
+            <p class="section-subtitle">
+              Experience the most advanced complaint and suggestion management
+              platform designed for real results.
+            </p>
+
+            <div class="features-grid">
+              <div class="feature-box">
+                <div class="feature-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="feature-content">
+                  <h3 class="feature-title">Secure & Anonymous</h3>
+                  <p class="feature-description">
+                    Your identity is protected. Submit your thoughts with
+                    complete peace of mind.
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon">
+                  <i class="fas fa-bolt"></i>
+                </div>
+                <div class="feature-content">
+                  <h3 class="feature-title">Quick Response</h3>
+                  <p class="feature-description">
+                    Receive rapid feedback on your submissions to keep you
+                    informed.
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feature-content">
+                  <h3 class="feature-title">Track Progress</h3>
+                  <p class="feature-description">
+                    Follow the status of your feedback and see how it is being
+                    handled.
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon">
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="feature-content">
+                  <h3 class="feature-title">Targeted Solution</h3>
+                  <p class="feature-description">
+                    We ensure your feedback reaches the right department for an
+                    effective solution.
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon">
+                  <i class="fas fa-globe"></i>
+                </div>
+                <div class="feature-content">
+                  <h3 class="feature-title">Multi-Platform</h3>
+                  <p class="feature-description">
+                    Access FeedbackHub from any device, anywhere, at any time.
+                  </p>
+                </div>
+              </div>
+
+              <div class="feature-box">
+                <div class="feature-icon">
+                  <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="feature-content">
+                  <h3 class="feature-title">Continuous Improvement</h3>
+                  <p class="feature-description">
+                    We are always evolving to provide you with the best
+                    experience.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="simpleStep">
+          <section class="process-section">
+            <h2 class="process-heading">Our Simple 3-Step Process</h2>
+            <div class="process-container">
+              <div class="process-step">
+                <div class="step-circle">1</div>
+                <div class="step-content">
+                  <h3>Submit Your Complain / Feedback</h3>
+                  <p>
+                    Easily share your thoughts, complaints, or suggestions
+                    through our secure and anonymous platform.
+                  </p>
+                </div>
+              </div>
+              <div class="process-step">
+                <div class="step-circle">2</div>
+                <div class="step-content">
+                  <h3>Track Progress</h3>
+                  <p>
+                    Monitor the status of your Complains & feedback in
+                    real-time, from submission to resolution.
+                  </p>
+                </div>
+              </div>
+              <div class="process-step">
+                <div class="step-circle">3</div>
+                <div class="step-content">
+                  <h3>Get Solution/Resolution</h3>
+                  <p>
+                    Receive a clear and concise response once your feedback has
+                    been addressed and a solution is found.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- phone bottom tab code -->
+      <div class="phoneBottomTab">
+        <div class="bottomTab1">
+          <img src="home.svg" alt="" class="bottomTabIcon" />
+          <p class="bottomTabIconText">Home</p>
+        </div>
+        <div class="bottomTab2">
+          <img src="track.svg" alt="" class="bottomTabIcon" />
+          <p class="bottomTabIconText">Track</p>
+        </div>
+        <div class="bottomTab3">
+          <img src="contact.svg" alt="" class="bottomTabIcon" />
+          <p class="bottomTabIconText">Contact</p>
+        </div>
+        <div class="bottomTab4">
+          <img src="profile.svg" alt="" class="bottomTabIcon" />
+          <p class="bottomTabIconText">profile</p>
+        </div>
+      </div>
+    </div>
+    <script src="toolTip.js"></script>
+    <!-- menubar of the nav bar -->
+    <script src="bottomTab.js"></script>
+    <!-- Bottom Tab -->
+    <script>
+      sessionStorage.removeItem("isAdmin");
+    </script>
+  </body>
+</html>

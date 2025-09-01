@@ -1,0 +1,26 @@
+@media (max-width: 768px) {
+    .userInfo {
+    /* display: none; */
+        width: 80px;
+    }
+
+    .menu{
+        display: none;
+    }
+
+    .phoneBottomTab{
+        display: flex;
+    }
+
+    .section2 {
+        display: flex;
+        height: calc(100vh - 150px);
+        flex-direction: column;
+        /* height: max-content; */
+        background-color: red;
+        position: relative;
+        top: 80px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}

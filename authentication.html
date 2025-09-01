@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login & Signup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="shortcut icon" href="logo.svg" type="image/x-icon" />
+  <link rel="stylesheet" href="authentication.css" /> <!-- main css file -->
+  <script type="module" src="firebase.js" defer></script> <!-- connect with firebase for sign up -->
+  <script type="module" src="auth.js" defer></script> <!-- connect with firebase for login -->
+</head>
+<body>
+  <div class="main">
+    <div class="container">
+      <!-- LOGIN FORM -->
+      <div id="login-form" class="form">
+        <div class="header"><h1>Login</h1></div>
+
+        <div class="social-login">
+            <a href="#" id="google-login" class="social-button">
+                <img src="google.svg" alt="Google icon" />
+                <span>Continue With Google</span>
+            </a>
+            <a href="#" id="apple-login" class="social-button">
+                <img src="Apple.svg" alt="Apple icon" style="margin: 0 10px 0 -10px"/>
+                <span>Continue With Apple</span>
+            </a>
+        </div>
+
+        <div class="separator">or</div>
+
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <div class="input-container">
+            <input
+              type="email"
+              id="login-email"
+              placeholder="example@gmail.com"
+              onkeyup="handleEmailInput('login-email')"
+            />
+            <span id="login-email-check" class="check-icon">&#10003;</span>
+          </div>
+          <div id="login-email-warning" class="warning-message"></div>
+        </div>
+
+        <!-- <div class="form-group">
+      <label for="login-password">Password</label>
+      <div class="input-container">
+        <input type="password" id="login-password" placeholder="Password" />
+        <span class="eye-icon" onclick="togglePasswordVisibility('login-password')">&#x1F441;</span>
+      </div>
+    </div> -->
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-container">
+            <input
+              type="password"
+              id="login-password"
+              placeholder="Password"
+            />
+            <span
+              class="eye-icon"
+              onclick="togglePasswordVisibility('login-password', this)"
+            >
+              <i class="fa-solid fa-eye"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="password-options">
+          <a href="#" class="forgot-password" onclick="showForgotPassword()"
+            >Forgot Password</a
+          >
+        </div>
+
+        <button class="submit-button">Login</button>
+        <p class="switch-form-link">
+          First time here?
+          <a href="#" onclick="showSignup()">Sign up for free</a>
+        </p>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="signup-form" class="form">
+        <div class="header"><h1>Sign up</h1></div>
+
+        <div class="social-login">
+            <a href="#" id="google-login-signup" class="social-button">
+                <img src="google.svg" alt="Google icon" />
+                <span>Continue With Google</span>
+            </a>
+            <a href="#" id="apple-login-signup" class="social-button">
+                <img src="Apple.svg" alt="Apple icon" style="margin: 0 10px 0 -10px"/>
+                <span>Continue With Apple</span>
+            </a>
+        </div>
+
+        <div class="separator">or</div>
+
+        <div class="form-group">
+          <label for="signup-name">Full Name</label>
+          <div class="input-container">
+            <input type="text" id="signup-name" placeholder="Your name" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <div class="input-container">
+            <input
+              type="email"
+              id="signup-email"
+              placeholder="Email"
+              onkeyup="handleEmailInput('signup-email')"
+            />
+            <span id="signup-email-check" class="check-icon">&#10003;</span>
+          </div>
+          <div id="signup-email-warning" class="warning-message"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <div class="input-container">
+            <input
+              type="password"
+              id="signup-password"
+              placeholder="Password"
+            />
+            <span
+              class="eye-icon"
+              onclick="togglePasswordVisibility('signup-password', this)"
+            >
+              <i class="fa-solid fa-eye"></i>
+            </span>
+          </div>
+        </div>
+
+        <button class="submit-button">Sign Up</button>
+        <p class="switch-form-link">
+          Already Have Account? <a href="#" onclick="showLogin()">Log In</a>
+        </p>
+      </div>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <div id="forgot-password-form" class="form">
+        <div class="header"><h1>Forgot Password</h1></div>
+        <p class="form-message">
+          Enter the email associated with your account to reset your password.
+        </p>
+
+        <div class="form-group">
+          <label for="forgot-email">Email</label>
+          <div class="input-container">
+            <input
+              type="email"
+              id="forgot-email"
+              placeholder="example@gmail.com"
+              onkeyup="handleEmailInput('forgot-email')"
+            />
+            <span id="forgot-email-check" class="check-icon">&#10003;</span>
+          </div>
+          <div id="forgot-email-warning" class="warning-message"></div>
+        </div>
+
+        <button class="submit-button">Send Reset Link</button>
+        <p class="switch-form-link">
+          Remembered your password?
+          <a href="#" onclick="showLogin()">Log In</a>
+        </p>
+      </div>
+    </div>
+    <div id="toast"></div>
+
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <div class="icon">✅</div>
+        <h2>Password Changed!</h2>
+        <p>Your password has been changed successfully.</p>
+        <button onclick="closeModal()">Back to Login</button>
+      </div>
+    </div>
+  </div>
+  <script src="scriptForAuthentication.js" defer></script>
+</body>
+</html>

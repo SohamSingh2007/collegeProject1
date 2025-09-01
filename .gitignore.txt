@@ -1,0 +1,7 @@
+# Ignore Windows system folders
+AppData/
+Application Data/
+Local Settings/
+Temp/
+*.log
+Thumbs.db

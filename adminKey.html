@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Key</title>
+  <!-- ✅ Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #1f1f1f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 15px;
+    }
+
+    .box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 30vw;
+      max-width: 400px;
+      min-width: 280px;
+      background: #000;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .circle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90px;
+      width: 90px;
+      border-radius: 50%;
+      background-color: silver;
+      margin-bottom: 20px;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 50px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    input {
+      height: 100%;
+      width: 100%;
+      background-color: transparent;
+      padding: 10px 50px 10px 15px;
+      outline: none;
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+      border: 1px solid #fff;
+      border-radius: 10px;
+    }
+
+    input:focus {
+      box-shadow: 0 2px 15px rgba(255, 255, 255, 0.6);
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 12px 20px;
+      background: #fff;
+      color: #000;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+      width: 100%;
+      height: 50px;
+    }
+
+    button:hover {
+      background: #ABFF2F;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* ✅ Responsive Media Queries */
+    @media (max-width: 1100px) {
+      .box {
+        width: 80vw;
+        padding: 30px 20px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .circle {
+        height: 70px;
+        width: 70px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .box {
+        width: 95vw;
+        padding: 25px 15px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      input {
+        font-size: 14px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="circle">
+      <i class="fa-solid fa-user fa-2x"></i>
+    </div>
+    <h2>Admin</h2>
+
+    <div class="input-container">
+      <input type="password" id="adminKey" placeholder="Admin Key">
+      <i id="toggleEye" class="fa-solid fa-eye toggle-eye"></i>
+    </div>
+
+    <button id="submitBtn">Submit</button>
+    <p id="message"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ✅ Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
+      authDomain: "fieldproject-21f1d.firebaseapp.com",
+      projectId: "fieldproject-21f1d",
+      storageBucket: "fieldproject-21f1d.firebasestorage.app",
+      messagingSenderId: "211444513819",
+      appId: "1:211444513819:web:28b909dc140cac64944cbe"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 👁️ Toggle password visibility
+    const adminKeyInput = document.getElementById("adminKey");
+    const toggleEye = document.getElementById("toggleEye");
+
+    toggleEye.addEventListener("click", () => {
+      if (adminKeyInput.type === "password") {
+        adminKeyInput.type = "text";
+        toggleEye.classList.replace("fa-eye", "fa-eye-slash");
+      } else {
+        adminKeyInput.type = "password";
+        toggleEye.classList.replace("fa-eye-slash", "fa-eye");
+      }
+    });
+
+    // 🔑 Check Admin Key
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const enteredKey = adminKeyInput.value;
+      const message = document.getElementById("message");
+
+      try {
+        const docRef = doc(db, "config", "admin");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const correctKey = docSnap.data().key;
+
+          if (enteredKey === correctKey) {
+            message.style.color = "limegreen";
+            message.innerText = "Access Granted";
+            sessionStorage.setItem("isAdmin", "true");
+            window.location.replace("adminPage.html");
+          } else {
+            message.style.color = "red";
+            message.innerText = "Access Denied";
+          }
+        } else {
+          message.style.color = "orange";
+          message.innerText = "⚠️ No Admin Key Found!";
+        }
+      } catch (error) {
+        console.error(error);
+        message.style.color = "red";
+        message.innerText = "Error fetching key!";
+      }
+    });
+  </script>
+</body>
+</html>

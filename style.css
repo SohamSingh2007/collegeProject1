@@ -1,0 +1,249 @@
+*{
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+.main{
+    width: 100vw;
+    height: 100vh;
+    font-family: "Arial", sans-serif;
+    background-color: silver;
+    overflow: auto;
+
+}
+
+nav{
+    display: flex;
+    width: 100vw;
+    height: 80px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #000;
+    color: #fff;
+    padding: 0px 20px 0px 20px;
+    gap: 20px;
+    position: fixed;
+    top: 0px;
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.355);
+    z-index: 10;
+}
+
+.logo{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    /* background-color: red; */
+}
+
+.logo img{
+    width: auto;
+    height: 35px;
+    width: 47px;
+}
+
+.logo p{
+    font-size: 26px;
+    font-family: "Arial", sans-serif;
+    font-weight: 700;
+
+    span{
+        color: #ABFF2F;
+        /* color: #00CC66; */
+    }
+}
+
+.navSection2{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: max-content;
+    height: max-content;
+    /* background-color: #ADFF2F; */
+    gap: 20px;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: row;
+    height: 40px;
+    width: 120px;
+    /* background-color: green; */
+}
+
+.login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    color: #000;
+    border: none;
+    width: 100%;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: Arial;
+}
+
+.login:hover{opacity: 0.92; background-color: #ABFF2F;}
+
+.menu{
+    display: flex;
+    /* background-color: blue; */
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+}
+
+.menuDropdown {
+    display: none;
+    flex-direction: column;
+    width: 250px;
+    background-color: #fff;
+    position: absolute;
+    right: 22px;
+    top: 70px;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.active {
+    display: flex;
+}
+
+.menuDropdown a {
+    color: #000;
+    padding: 12px 16px;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: baseline;
+    /* ✅ icon aur text vertical align */
+    gap: 10px;
+    /* ✅ icon aur text ke beech fixed spacing */
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    /* ✅ text ko properly center karta hai */
+    transition: background 0.2s ease;
+}
+
+.menuDropdown a i {
+    font-size: 16px;
+    /* ✅ icons ka size fix kiya */
+    width: 20px;
+    /* ✅ icons ke liye equal space, taaki text ek line me ho */
+    text-align: center;
+    line-height: 1;
+}
+
+.menuDropdown a:hover {
+    background: #f1f1f1;
+}
+
+/* Special styling for Logout button */
+.menuDropdown .logout {
+    background: #555;
+    color: #fff;
+    border-radius: 30px;
+    margin: 10px;
+    justify-content: center;
+    border-bottom: none;
+}
+
+.menuDropdown .logout:hover{
+    background: rgb(230, 60, 60);
+}
+
+.menuDropdown .quickLink:hover {
+    background: #555;
+    color: #fff;
+}
+
+.section2{
+    display: flex;
+    height: calc(100vh - 80px);
+    flex-direction: column;
+    /* height: max-content; */
+    background-color: #000;
+    position: relative;
+    top: 80px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.section2::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.phoneBottomTab{
+    display: none;
+    flex-direction: row;
+    background-color: #000;
+    width: 100vw;
+    height: 70px;
+    position: fixed;
+    bottom: 0px;
+    border-top: 0.1px solid #fff;
+    box-shadow: 0 -1px 10px rgba(255, 255, 255, 0.5);
+}
+
+.bottomTab1{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* background-color: green; */
+    justify-content: center;
+    align-items: center;
+}
+
+.bottomTab2{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* background-color: yellow; */
+    justify-content: center;
+    align-items: center;
+}
+
+.bottomTab3{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* background-color: plum; */
+    justify-content: center;
+    align-items: center;
+}
+
+.bottomTab4{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /* background-color: skyblue; */
+    justify-content: center;
+    align-items: center;
+}
+
+.bottomTabIcon{
+    height: 1.7rem;
+    margin-bottom: 5px;
+}
+
+.bottomTabIconText{
+    color: silver;
+    font-size: 0.8rem;
+    font-weight: 400;
+}
