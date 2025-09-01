@@ -1,12 +1,39 @@
-import { auth, googleProvider, appleProvider } from "./firebase.js";
+import { auth, googleProvider, appleProvider, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
   sendPasswordResetEmail,
   updateProfile,
-  fetchSignInMethodsForEmail
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import {
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+// ---------- SAVE USER DATA ----------
+async function saveUserData(user, name = null, isSignup = false) {
+  const userRef = doc(db, "users", user.uid);
+
+  if (isSignup) {
+    await setDoc(userRef, {
+      uid: user.uid,
+      name: name || user.displayName || "",
+      email: user.email,
+      provider: user.providerData[0]?.providerId || "email",
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+    });
+  } else {
+    await updateDoc(userRef, {
+      lastLogin: serverTimestamp(),
+    });
+  }
+}
 
 // ---------- EMAIL/PASSWORD SIGNUP ----------
 const signupForm = document.getElementById("signup-form");
@@ -21,6 +48,8 @@ signupForm?.querySelector(".submit-button")?.addEventListener("click", async (e)
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(userCredential.user, { displayName: name });
+    await saveUserData(userCredential.user, name, true);
+
     alert("Signup successful!");
     window.location.href = "authentication.html";
   } catch (error) {
@@ -38,7 +67,9 @@ loginForm?.querySelector(".submit-button")?.addEventListener("click", async (e) 
   if (!email || !password) return alert("Please enter email and password");
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    await saveUserData(result.user, null, false);
+
     alert("Login successful!");
     window.location.href = "index.html";
   } catch (error) {
@@ -46,72 +77,119 @@ loginForm?.querySelector(".submit-button")?.addEventListener("click", async (e) 
   }
 });
 
-// ---------- GOOGLE SIGNUP & LOGIN ----------
-async function handleGoogleAuth(isSignup) {
+// ---------- GOOGLE SIGNUP ----------
+async function handleGoogleSignup() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
 
-    const methods = await fetchSignInMethodsForEmail(auth, user.email);
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-    if (isSignup) {
-      if (methods.includes("google.com")) {
-        alert("You already have an account. Please login instead.");
-        await auth.signOut();
-        return;
-      }
-      alert("Signup with Google successful!");
-    } else {
-      if (!methods.includes("google.com")) {
-        alert("No account found with this Google email. Please sign up first.");
-        await auth.signOut();
-        return;
-      }
-      alert("Login with Google successful!");
+    if (userSnap.exists()) {
+      alert("Account already exists. Please login instead.");
+      window.location.href = "authentication.html";
+      return;
     }
+
+    await saveUserData(user, user.displayName, true);
+    alert("Signup with Google successful!");
     window.location.href = "index.html";
   } catch (error) {
     alert(error.message);
   }
 }
 
-document.getElementById("google-login")?.addEventListener("click", (e) => { e.preventDefault(); handleGoogleAuth(false); });
-document.getElementById("google-login-signup")?.addEventListener("click", (e) => { e.preventDefault(); handleGoogleAuth(true); });
+// ---------- GOOGLE LOGIN ----------
+async function handleGoogleLogin() {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
 
-// ---------- APPLE SIGNUP & LOGIN ----------
-async function handleAppleAuth(isSignup) {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("This Google account is not registered. Please sign up first.");
+      return;
+    }
+
+    await saveUserData(user, null, false);
+    alert("Login with Google successful!");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+document.getElementById("google-login")?.addEventListener("click", (e) => { 
+  e.preventDefault(); 
+  handleGoogleLogin(); 
+});
+
+document.getElementById("google-login-signup")?.addEventListener("click", (e) => { 
+  e.preventDefault(); 
+  handleGoogleSignup(); 
+});
+
+// ---------- APPLE SIGNUP ----------
+async function handleAppleSignup() {
   try {
     const result = await signInWithPopup(auth, appleProvider);
     const user = result.user;
 
-    const methods = await fetchSignInMethodsForEmail(auth, user.email);
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-    if (isSignup) {
-      if (methods.includes("apple.com")) {
-        alert("You already have an account. Please login instead.");
-        await auth.signOut();
-        return;
-      }
-      alert("Signup with Apple successful!");
-    } else {
-      if (!methods.includes("apple.com")) {
-        alert("No account found with this Apple email. Please sign up first.");
-        await auth.signOut();
-        return;
-      }
-      alert("Login with Apple successful!");
+    if (userSnap.exists()) {
+      alert("Account already exists. Please login instead.");
+      window.location.href = "authentication.html";
+      return;
     }
 
+    await saveUserData(user, user.displayName, true);
+    alert("Signup with Apple successful!");
     window.location.href = "index.html";
   } catch (error) {
     alert(error.message);
   }
 }
 
-document.getElementById("apple-login")?.addEventListener("click", (e) => { e.preventDefault(); handleAppleAuth(false); });
-document.getElementById("apple-login-signup")?.addEventListener("click", (e) => { e.preventDefault(); handleAppleAuth(true); });
+// ---------- APPLE LOGIN ----------
+async function handleAppleLogin() {
+  try {
+    const result = await signInWithPopup(auth, appleProvider);
+    const user = result.user;
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("This Apple account is not registered. Please sign up first.");
+      return;
+    }
+
+    await saveUserData(user, null, false);
+    alert("Login with Apple successful!");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+document.getElementById("apple-login")?.addEventListener("click", (e) => { 
+  e.preventDefault(); 
+  handleAppleLogin(); 
+});
+
+document.getElementById("apple-login-signup")?.addEventListener("click", (e) => { 
+  e.preventDefault(); 
+  handleAppleSignup(); 
+});
 
 // ---------- FORGOT PASSWORD ----------
+import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
 const forgotForm = document.getElementById("forgot-password-form");
 forgotForm?.querySelector(".submit-button")?.addEventListener("click", async (e) => {
   e.preventDefault();
@@ -119,12 +197,19 @@ forgotForm?.querySelector(".submit-button")?.addEventListener("click", async (e)
   if (!email) return alert("Enter your email");
 
   try {
-    await sendPasswordResetEmail(auth, email);
+    // 🔍 Check if email exists in Firestore
+    const q = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(q);
 
-    // Show modal instead of alert
+    if (querySnapshot.empty) {
+      alert("This email is not registered in our system.");
+      return;
+    }
+
+    // ✅ Email exists, send reset link
+    await sendPasswordResetEmail(auth, email);
     document.getElementById("successModal").style.display = "flex";
     document.querySelector("#successModal p").textContent = `Password reset link has been sent to ${email}.`;
-
   } catch (error) {
     alert(error.message);
   }
