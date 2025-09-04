@@ -10,3 +10,10 @@ document.addEventListener("click", (event) => {
         dropdown.classList.remove("active");
     }
 });
+
+// ✅ Close dropdown when any link inside menuDropdown is clicked
+document.querySelectorAll(".menuDropdown a").forEach(link => {
+    link.addEventListener("click", () => {
+        dropdown.classList.remove("active");
+    });
+});

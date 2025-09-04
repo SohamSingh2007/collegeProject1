@@ -38,10 +38,11 @@
 .btn {
     display: inline-block;
     padding: 12px 24px;
+    width: 190px;
     margin: 10px;
     font-size: 1rem;
     font-weight: bold;
-    border-radius: 30px;
+    border-radius: 10px;
     text-decoration: none;
     transition: 0.3s ease-in-out;
 }
@@ -62,7 +63,6 @@
     color: #fff;
 }
 
-/* Blue outlined button */
 .btn-outline {
     background: transparent;
     border: 2px solid #00cc66;

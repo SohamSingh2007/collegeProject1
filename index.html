@@ -55,11 +55,11 @@
       </nav>
       <div class="menuDropdown">
         <a href="#" class="quickLink"><i class="fas fa-home"></i><span>Home</span></a>
-        <a href="#" class="quickLink"><i class="fas fa-user"></i><span>Profile</span></a>
+        <a href="profile.html" class="quickLink"><i class="fas fa-user"></i><span>Profile</span></a>
         <a href="adminKey.html" class="quickLink"><i class="fas fa-user-shield"></i><span>Admin</span></a>
         <a href="#" class="quickLink"><i class="fas fa-file-lines"></i><span>Track</span></a>
         <a href="#" class="quickLink"><i class="fas fa-phone"></i><span>Contact Us</span></a>
-        <a href="" class="logout">
+        <a href="" class="logout" id="logoutBtn">
           <i class="fas fa-sign-out-alt"></i><span>Logout</span>
         </a>
       </div>
@@ -273,6 +273,7 @@
     <!-- menubar of the nav bar -->
     <script src="bottomTab.js"></script>
     <!-- Bottom Tab -->
+    <script type="module" src="logout.js"></script>
     <script>
       sessionStorage.removeItem("isAdmin");
     </script>

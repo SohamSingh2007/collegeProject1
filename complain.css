@@ -1,5 +1,5 @@
 /* --- CSS Variables for theming --- */
-:root {
+/* :root {
     --bg-color: #f3f4f6;
     --container-bg: #ffffff;
     --text-color: #1f2937;
@@ -11,10 +11,24 @@
     --success-color: #10b981;
     --error-color: #ef4444;
     --shadow-color: rgba(0, 0, 0, 0.1);
+} */
+
+:root {
+    --bg-color: #1f1f1f;
+    --container-bg: #000000;
+    --text-color: #fffffa;
+    --subtle-text-color: #6b7280;
+    --input-bg: transparent;
+    --border-color: #d1d5db;
+    --primary-color: #abff2f;
+    --primary-hover-color: #ABFF2F;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 /* --- Dark Mode Variables --- */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
     :root {
         --bg-color: #111827;
         --container-bg: #1f2937;
@@ -23,7 +37,7 @@
         --input-bg: #374151;
         --border-color: #4b5563;
     }
-}
+}*/
 
 /* --- General Styles --- */
 * {
@@ -132,7 +146,7 @@ body {
 .form-textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.874);
 }
 
 .form-textarea {

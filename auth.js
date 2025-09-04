@@ -132,61 +132,6 @@ document.getElementById("google-login-signup")?.addEventListener("click", (e) =>
   handleGoogleSignup(); 
 });
 
-// ---------- APPLE SIGNUP ----------
-async function handleAppleSignup() {
-  try {
-    const result = await signInWithPopup(auth, appleProvider);
-    const user = result.user;
-
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (userSnap.exists()) {
-      alert("Account already exists. Please login instead.");
-      window.location.href = "authentication.html";
-      return;
-    }
-
-    await saveUserData(user, user.displayName, true);
-    alert("Signup with Apple successful!");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-// ---------- APPLE LOGIN ----------
-async function handleAppleLogin() {
-  try {
-    const result = await signInWithPopup(auth, appleProvider);
-    const user = result.user;
-
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      alert("This Apple account is not registered. Please sign up first.");
-      return;
-    }
-
-    await saveUserData(user, null, false);
-    alert("Login with Apple successful!");
-    window.location.href = "index.html";
-  } catch (error) {
-    alert(error.message);
-  }
-}
-
-document.getElementById("apple-login")?.addEventListener("click", (e) => { 
-  e.preventDefault(); 
-  handleAppleLogin(); 
-});
-
-document.getElementById("apple-login-signup")?.addEventListener("click", (e) => { 
-  e.preventDefault(); 
-  handleAppleSignup(); 
-});
-
 // ---------- FORGOT PASSWORD ----------
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
