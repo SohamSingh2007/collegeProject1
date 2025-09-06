@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Delete My Firebase Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #1a1f29;
+      --text: #e8eefb;
+      --muted: #93a0b4;
+      --accent: #ff4757;
+      --accent-2: #2ed573;
+      --input: #232a36;
+      --border: #2b3443;
+      --warning: #ffd166;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(80rem 80rem at 10% -20%, #19202b 0%, #0f1115 40%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 720px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)) , var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: 0.2px;
+    }
+    p.sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 720px) {
+      .row, .row-3 { grid-template-columns: 1fr; }
+    }
+    .block {
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    input {
+      width: 100%;
+      background: var(--input);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      outline: none;
+    }
+    input::placeholder { color: #7f8aa3; }
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+      background: #3b82f6;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .btn.red { background: var(--accent); }
+    .btn.green { background: #10b981; }
+    .btn.gray { background: #475569; }
+    .stack { display: flex; gap: 10px; flex-wrap: wrap; }
+    .status {
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--muted);
+      word-break: break-all;
+    }
+    .msg {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .msg.ok { color: var(--accent-2); }
+    .msg.warn { color: var(--warning); }
+    .msg.err { color: var(--accent); }
+    code.kv {
+      display: inline-block;
+      background: rgba(0,0,0,0.25);
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: #c4d3f5;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Delete my Firebase account</h1>
+    <p class="sub">This page can delete only the currently signed‑in user from your Firebase project.</p>
+
+    <div class="row">
+      <div class="block">
+        <div class="label">Auth actions</div>
+        <div class="stack">
+          <button class="btn green" id="btnAnon">Sign in anonymously</button>
+          <button class="btn gray" id="btnSignOut">Sign out</button>
+          <button class="btn red" id="btnDelete">Delete my account</button>
+        </div>
+        <div class="status" id="authState">Checking auth state…</div>
+        <div class="msg" id="msg" style="display:none;"></div>
+      </div>
+
+      <div class="block">
+        <div class="label">Optional: email re‑auth (if required)</div>
+        <div class="stack" style="flex-direction: column;">
+          <input id="email" type="email" placeholder="Email (for re-auth if needed)" />
+          <input id="password" type="password" placeholder="Password (for re-auth if needed)" />
+          <button class="btn" id="btnReauth">Re‑authenticate with email/password</button>
+        </div>
+        <div class="status">If delete fails with “requires recent login”, re‑authenticate, then delete again.</div>
+      </div>
+    </div>
+
+    <div class="block" style="margin-top:12px;">
+      <div class="label">Current user info</div>
+      <div class="status">
+        <div><strong>UID:</strong> <code class="kv" id="uid">—</code></div>
+        <div><strong>Email:</strong> <code class="kv" id="uemail">—</code></div>
+        <div><strong>Anonymous:</strong> <code class="kv" id="uanon">—</code></div>
+        <div><strong>Providers:</strong> <code class="kv" id="uproviders">—</code></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInAnonymously,
+      signOut,
+      deleteUser as deleteUserFn,
+      reauthenticateWithCredential,
+      EmailAuthProvider
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
+      authDomain: "fieldproject-21f1d.firebaseapp.com",
+      projectId: "fieldproject-21f1d",
+      storageBucket: "fieldproject-21f1d.appspot.com",
+      messagingSenderId: "211444513819",
+      appId: "1:211444513819:web:28b909dc140cac64944cbe"
+    };
+
+    // Init
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // UI elements
+    const msgEl = document.getElementById("msg");
+    const stateEl = document.getElementById("authState");
+    const uidEl = document.getElementById("uid");
+    const emailEl = document.getElementById("uemail");
+    const anonEl = document.getElementById("uanon");
+    const provEl = document.getElementById("uproviders");
+
+    const btnAnon = document.getElementById("btnAnon");
+    const btnSignOut = document.getElementById("btnSignOut");
+    const btnDelete = document.getElementById("btnDelete");
+    const btnReauth = document.getElementById("btnReauth");
+
+    const emailInput = document.getElementById("email");
+    const passInput = document.getElementById("password");
+
+    function showMsg(text, type = "ok") {
+      msgEl.textContent = text;
+      msgEl.className = "msg " + (type === "err" ? "err" : type === "warn" ? "warn" : "ok");
+      msgEl.style.display = "block";
+    }
+    function clearMsg() {
+      msgEl.style.display = "none";
+    }
+
+    // Update UI on auth state changes
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        stateEl.textContent = `Signed in${user.isAnonymous ? " (anonymous)" : ""}.`;
+        uidEl.textContent = user.uid || "—";
+        emailEl.textContent = user.email || "—";
+        anonEl.textContent = String(!!user.isAnonymous);
+        const providers = (user.providerData || []).map(p => p.providerId).join(", ") || "—";
+        provEl.textContent = providers;
+      } else {
+        stateEl.textContent = "Not signed in.";
+        uidEl.textContent = emailEl.textContent = anonEl.textContent = provEl.textContent = "—";
+      }
+      clearMsg();
+    });
+
+    // Sign in anonymously (good for testing delete flow)
+    btnAnon.addEventListener("click", async () => {
+      clearMsg();
+      try {
+        await signInAnonymously(auth);
+        showMsg("Signed in anonymously.", "ok");
+      } catch (e) {
+        showMsg(e.message, "err");
+      }
+    });
+
+    // Sign out
+    btnSignOut.addEventListener("click", async () => {
+      clearMsg();
+      try {
+        await signOut(auth);
+        showMsg("Signed out.", "ok");
+      } catch (e) {
+        showMsg(e.message, "err");
+      }
+    });
+
+    // Re-authenticate with email/password (if the account has that provider)
+    btnReauth.addEventListener("click", async () => {
+      clearMsg();
+      const user = auth.currentUser;
+      const email = emailInput.value.trim();
+      const password = passInput.value;
+      if (!user) return showMsg("No user is signed in.", "warn");
+      if (!email || !password) return showMsg("Enter email and password to re‑authenticate.", "warn");
+
+      try {
+        const cred = EmailAuthProvider.credential(email, password);
+        await reauthenticateWithCredential(user, cred);
+        showMsg("Re‑authenticated successfully. Now try deleting again.", "ok");
+      } catch (e) {
+        showMsg(e.message, "err");
+      }
+    });
+
+    // Delete current user
+    btnDelete.addEventListener("click", async () => {
+      clearMsg();
+      const user = auth.currentUser;
+      if (!user) return showMsg("No user is signed in.", "warn");
+
+      try {
+        await deleteUserFn(user);
+        showMsg("Account deleted successfully.", "ok");
+      } catch (e) {
+        if (e.code === "auth/requires-recent-login") {
+          showMsg("Delete blocked: requires recent login. Re‑authenticate, then try again.", "warn");
+        } else {
+          showMsg(e.message, "err");
+        }
+      }
+    });
+  </script>
+</body>
+</html>

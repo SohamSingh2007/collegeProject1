@@ -22,155 +22,145 @@
       border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.25);
       text-align: center;
     }
-    /* .section1 { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; width: 100%; } */
     .circle { 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      height: 100px; 
-      width: 100px; 
-      border-radius: 50%; 
-      background-color: silver; 
-      margin-right: 20px; 
+      display: flex; justify-content: center; align-items: center; 
+      height: 100px; width: 100px; border-radius: 50%; 
+      background-color: silver; margin-right: 20px; 
     }
-
-    .email-container { width: 100%; height: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 30px;}
-
-    .email-container p { 
-      display: flex; 
-      justify-content: start; 
-      align-items: center;
-      gap: 10px;
-      font-size: 16px; 
-      font-weight: 600; 
-      color: #fff; 
-    }
-
+    .email-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 30px;}
+    .email-container p { display: flex; justify-content: start; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #fff; }
     .email-container span { color: #ABFF2F; }
     input {
-      padding: 8px 10px; 
-      border-radius: 8px; 
-      border: none;
-      outline: 2px solid #fff;
-      color: #fff;
-      background-color: transparent;
-      font-size: 14px; 
-      width: 100%;
+      padding: 8px 10px; border-radius: 8px; border: none;
+      outline: 2px solid #fff; color: #fff;
+      background-color: transparent; font-size: 14px; width: 100%;
     }
+    .btn-group { display: flex; gap: 10px; width: 100%; margin-top: 15px; }
     button {
       padding: 12px 20px; background: #fff; color: #000;
       border: none; font-size: 16px; font-weight: 600;
-      border-radius: 10px; cursor: pointer; width: 100%; height: 50px;
-      margin-top: 15px;
+      border-radius: 10px; cursor: pointer; flex: 1; height: 50px;
     }
     button:hover { background: #ABFF2F; }
+    #cancelBtn { display: none; background: #444; color: #fff; }
+    #cancelBtn:hover { background: red; }
     #message { margin-top: 10px; font-size: 14px; font-weight: 600; color: #fff; }
+    #message a { text-decoration: none; color: #ABFF2F; font-weight: 900; transition: all 0.3s ease; }
+    #message a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="box">
-    <!-- <section class="section1"> -->
-      <div class="circle"><i class="fa-solid fa-user fa-2x"></i></div>
-      <div class="email-container">
-          <p>Name: <span id="name"></span></p>
-          <p>Email: <span id="email"></span></p>
-          <p>Created: <span id="created"></span></p>
-      </div>
-    <!-- </section> -->
-
-    <button id="editBtn">Edit</button>
+    <div class="circle"><i class="fa-solid fa-user fa-2x"></i></div>
+    <div class="email-container">
+      <p>Name: <span id="name"></span></p>
+      <p>Email: <span id="email"></span></p>
+      <p>Created: <span id="created"></span></p>
+    </div>
+    <div class="btn-group">
+      <button id="editBtn">Edit</button>
+      <button id="cancelBtn">Cancel</button>
+    </div>
     <p id="message"></p>
   </div>
 
   <script type="module">
     import { auth, db } from "./firebase.js";
-    import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+      onAuthStateChanged,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-    const nameSpan = document.getElementById("name");
-    const emailSpan = document.getElementById("email");
-    const createdSpan = document.getElementById("created");
-    const editBtn = document.getElementById("editBtn");
-    const msg = document.getElementById("message");
+    window.addEventListener("DOMContentLoaded", () => {
+      const nameSpan = document.getElementById("name");
+      const emailSpan = document.getElementById("email");
+      const createdSpan = document.getElementById("created");
+      const editBtn = document.getElementById("editBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const msg = document.getElementById("message");
 
-    let userRef = null;
-    let isEditing = false;
+      let userRef = null;
+      let isEditing = false;
 
-    // ✅ Watch for logged-in user
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userRef = doc(db, "users", user.uid);
-        loadUserData();
-      } else {
-        msg.textContent = "⚠️ No user logged in.";
+      function showMessage(text, type = "info") {
+        msg.style.color =
+          type === "error" ? "red" :
+          type === "success" ? "lime" :
+          "orange";
+        msg.innerHTML = text;  // innerHTML lets us add <a> link
       }
-    });
 
-    // ✅ Load user data
-    async function loadUserData() {
-      if (!userRef) return;
-      const snap = await getDoc(userRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        nameSpan.textContent = data.name || "N/A";
-        emailSpan.textContent = data.email || "N/A";
-        createdSpan.textContent = data.createdAt?.toDate?.().toLocaleString() || "N/A";
-      } else {
-        msg.textContent = "User data not found!";
+      async function loadUserData() {
+        if (!userRef) return;
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          nameSpan.textContent = data.name || "N/A";
+          emailSpan.textContent = data.email || "N/A";
+          createdSpan.textContent = data.createdAt?.toDate?.().toLocaleString() || "N/A";
+        } else {
+          showMessage("User data not found!", "error");
+        }
       }
-    }
 
-    // ✅ Edit / Save button
-    editBtn.addEventListener("click", async () => {
-      if (!isEditing) {
-        // Switch to edit mode
-        nameSpan.innerHTML = `<input id="editName" value="${nameSpan.textContent}">`;
-        emailSpan.innerHTML = `<input id="editEmail" value="${emailSpan.textContent}">`;
-        createdSpan.textContent = createdSpan.textContent; // keep createdAt as is (not editable)
-        editBtn.textContent = "Save";
-        isEditing = true;
-      } else {
-        // Save back to Firestore
-        const newName = document.getElementById("editName").value;
-        const newEmail = document.getElementById("editEmail").value;
+      // Listen for auth state
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          userRef = doc(db, "users", user.uid);
+          await loadUserData();
+        } else {
+          showMessage(
+            'No user logged in <a href="authentication.html">Login here</a>',
+            "info"
+          );
+          msg.style.color = "silver";
+          msg.style.fontWeight = "700";
+        }
+      });
+
+      // Edit button
+      editBtn.addEventListener("click", async () => {
+        if (!isEditing) {
+          nameSpan.innerHTML = `<input id="editName" value="${nameSpan.textContent}">`;
+          editBtn.textContent = "Save";
+          cancelBtn.style.display = "block";
+          isEditing = true;
+          return;
+        }
+
+        const newName = document.getElementById("editName").value.trim();
+        if (!newName) return showMessage("Name cannot be empty.", "error");
 
         try {
-          await updateDoc(userRef, {
-            name: newName,
-            email: newEmail
-          });
-
-          // Also update Firebase Auth displayName & email
-          if (auth.currentUser) {
+          if (auth.currentUser?.displayName !== newName) {
             await updateProfile(auth.currentUser, { displayName: newName });
           }
 
-          msg.style.color = "green";
-          msg.textContent = "Updated successfully!";
+          await updateDoc(userRef, { name: newName });
+
+          showMessage("Name updated successfully!", "success");
           editBtn.textContent = "Edit";
+          cancelBtn.style.display = "none";
           isEditing = false;
-          loadUserData();
-          setTimeout(() => {
-            msg.textContent = "";
-          }, 2000);
+          await loadUserData();
+          setTimeout(() => showMessage(""), 2000);
+
         } catch (err) {
-          let friendlyMsg = "Something went wrong. Please try again.";
-
-          if (err.code === "permission-denied") {
-            friendlyMsg = "You don’t have permission to update this data.";
-          } else if (err.code === "unavailable") {
-              friendlyMsg = "Server is temporarily unavailable. Please retry shortly.";
-          } else if (err.code === "invalid-argument") {
-              friendlyMsg = "Your input data seems invalid. Please check and retry.";
-          } else if (err.code === "auth/email-already-in-use") {
-              friendlyMsg = "This email is already registered with another account.";
-          } else if (err.code === "auth/invalid-email") {
-              friendlyMsg = "Please enter a valid email address.";
-          }
-
-          showMessage(friendlyMsg, true); // 🔴 always red for errors
+          console.error("Update error:", err);
+          showMessage("Something went wrong. Please try again.", "error");
         }
-      }
+      });
+
+      // Cancel button
+      cancelBtn.addEventListener("click", async () => {
+        await loadUserData();
+        editBtn.textContent = "Edit";
+        cancelBtn.style.display = "none";
+        isEditing = false;
+        showMessage("Edit cancelled", "info");
+        setTimeout(() => showMessage(""), 1500);
+      });
     });
   </script>
 </body>
