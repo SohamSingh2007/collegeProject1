@@ -5,16 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard SPA</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="stylesheet" href="adminPage.css"> <!-- Link to external CSS file -->
-  <script type="module" src="adminPage.js" defer></script> <!-- Link to external JS file -->
+  <link rel="stylesheet" href="adminPage.css">
+  <script type="module" src="adminPage.js" defer></script>
 </head>
 <body>
   <div class="sidebar">
-    <div class="logo"><img src="logo.svg" alt=""><p>Complain<span>Easy</span></p></div>
+    <div class="logo">
+      <img src="logo.svg" alt="">
+      <p>Complain<span>Easy</span></p>
+    </div>
     <nav>
-      <a href="#" data-page="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-      <a href="#" data-page="complains"><i class="fa-solid fa-file-lines"></i> Complains</a>
-      <a href="#" data-page="users"><i class="fa-solid fa-users"></i> Users</a>
+      <a href="#complainForm" data-route="complainForm"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+      <a href="#suggestion" data-route="suggestion"><i class="fa-solid fa-file-lines"></i> Complains</a>
+      <a href="#users" data-route="users"><i class="fa-solid fa-users"></i> Users</a>
       <button id="dropdownBtn"><i class="fa-solid fa-gear"></i> Settings</button>
       <div class="dropdown" id="dropdownMenu">
         <a href="#" id="changeKeyBtn"><i class="fa-solid fa-key"></i> Change Key</a>
@@ -25,11 +28,12 @@
     </div>
   </div>
 
-  <div class="main-content" id="mainContent">
+  <div class="main-content" id="content">
     <h1>Welcome to Admin Dashboard</h1>
     <p>Click sidebar items to load content here.</p>
   </div>
 
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
       <h3>Change Admin Key</h3>
