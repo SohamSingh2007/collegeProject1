@@ -90,7 +90,7 @@ async function loadPage(page) {
 }
 
 function handleRoute() {
-  const hash = window.location.hash.substring(1) || "complainForm"; 
+  const hash = window.location.hash.substring(1) || "dashboard"; 
   loadPage(hash);
 }
 
@@ -104,3 +104,64 @@ window.addEventListener("pageshow", function (event) {
     window.location.replace("adminKey.html");
   }
 });
+
+
+if (!sessionStorage.getItem("isAdmin")) {
+  window.location.replace("adminKey.html");
+  throw new Error("Access denied");
+}
+
+
+
+
+
+// adminPage.js
+
+async function loadUserTable() {
+  const userTableBody = document.getElementById('userTableBody');
+  // Firebase initialization
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).catch(console.error);
+
+  onAuthStateChanged(auth, user => {
+    if (!user) return;
+    const usersCollection = collection(db, "users");
+
+    onSnapshot(usersCollection, snapshot => {
+      const loading = document.getElementById('loadingState');
+      if (loading) loading.remove();
+
+      userTableBody.innerHTML = '';
+      if (snapshot.empty) {
+        userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--gray-400);">No users found.</td></tr>`;
+        return;
+      }
+
+      let srNo = 1;
+      snapshot.docs.forEach(docSnap => {
+        const userData = docSnap.data();
+        const lastLogin = userData.lastLogin?.toDate ? userData.lastLogin.toDate().toLocaleString() : 'N/A';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${srNo++}</td>
+          <td>${userData.name || 'N/A'}</td>
+          <td>${userData.email || 'N/A'}</td>
+          <td>${lastLogin}</td>
+          <td>${userData.provider || 'N/A'}</td>
+          <td>
+            <div class="actions-cell">
+              <button data-id="${docSnap.id}" class="edit-btn">Edit</button>
+              <button data-id="${docSnap.id}" class="delete-btn">Delete</button>
+            </div>
+          </td>`;
+        userTableBody.appendChild(tr);
+      });
+    });
+  });
+}
+
+// After injecting table.html
+loadUserTable();

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Pie Chart with Animated Counters</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // ✅ Your Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
+      authDomain: "fieldproject-21f1d.firebaseapp.com",
+      projectId: "fieldproject-21f1d",
+      storageBucket: "fieldproject-21f1d.firebasestorage.app",
+      messagingSenderId: "211444513819",
+      appId: "1:211444513819:web:28b909dc140cac64944cbe"
+    };
+
+    // ✅ Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let chart; // keep chart instance
+
+    // ✅ Animate number counter
+    function animateValue(id, start, end, duration) {
+      let obj = document.getElementById(id);
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.innerText = Math.floor(progress * (end - start) + start);
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // ✅ Real-time listener
+    const docRef = doc(db, "databoard", "complaints");
+    onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        let data = docSnap.data();
+        updatePieChart(data);
+
+        // ✅ Animate counters
+        animateValue("pendingText", parseInt(document.getElementById("pendingText").innerText) || 0, data.pending, 1000);
+        animateValue("completedText", parseInt(document.getElementById("completedText").innerText) || 0, data.completed, 1000);
+        animateValue("suggestionsText", parseInt(document.getElementById("suggestionsText").innerText) || 0, data.suggestions, 1000);
+        animateValue("totalText", parseInt(document.getElementById("totalText").innerText) || 0, data.pending + data.completed + data.suggestions, 1000);
+      } else {
+        console.log("No such document!");
+      }
+    });
+
+    // ✅ Function to create/update Pie Chart
+    function updatePieChart(data) {
+      const ctx = document.getElementById("myPieChart").getContext("2d");
+
+      if (chart) {
+        chart.data.datasets[0].data = [data.pending, data.completed, data.suggestions];
+        chart.update();
+      } else {
+        chart = new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: ["Pending", "Completed", "Suggestions"],
+            datasets: [{
+              data: [data.pending, data.completed, data.suggestions],
+              backgroundColor: ["#f39c12", "#27ae60", "#2980b9"],
+              borderColor: "#fff",
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" }
+            }
+          }
+        });
+      }
+    }
+  </script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    .chart-container {
+      width: 280px;   /* ✅ Smaller chart */
+      height: 280px;
+      margin: auto;
+    }
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat-box {
+      background: #2C2C2C;
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 12px;
+      font-size: 18px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+      min-width: 150px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .stat-box:hover {
+      transform: translateY(-5px);
+    }
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 5px;
+      color: #f1c40f;
+    }
+  </style>
+</head>
+<body>
+  <h2>Complaints Status</h2>
+
+  <!-- ✅ Pie Chart -->
+  <div class="chart-container">
+    <canvas id="myPieChart"></canvas>
+  </div>
+
+  <!-- ✅ Animated Counters -->
+  <div class="stats">
+    <div class="stat-box">
+      Pending
+      <div id="pendingText" class="stat-number">0</div>
+    </div>
+    <div class="stat-box">
+      Completed
+      <div id="completedText" class="stat-number">0</div>
+    </div>
+    <div class="stat-box">
+      Suggestions
+      <div id="suggestionsText" class="stat-number">0</div>
+    </div>
+    <div class="stat-box">
+      Total
+      <div id="totalText" class="stat-number">0</div>
+    </div>
+  </div>
+</body>
+</html>

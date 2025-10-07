@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management Table</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gray-900: #111827; --gray-800: #1f2937; --gray-700: #374151;
+      --gray-600: #4b5563; --gray-400: #9ca3af; --gray-300: #d1d5db; --gray-100: #f3f4f6;
+      --blue-500: #3b82f6; --blue-600: #2563eb; --blue-700: #1d4ed8;
+      --red-600: #dc2626; --red-700: #b91c1c; --blue-400-text: #60a5fa; --blue-300-text-hover: #93c5fd;
+      --red-400-text: #f87171; --red-300-text-hover: #fca5a5;
+    }
+    body{font-family:'Inter',sans-serif;background-color:var(--gray-900);color:var(--gray-100);margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+    .container{width:100%;max-width:64rem;margin:0 auto;}
+    .card{background-color:var(--gray-800);box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);border-radius:1rem;overflow:hidden;}
+    .card-header{padding:1rem 1.5rem;border-bottom:1px solid var(--gray-700);}
+    .card-header h2{font-size:1.25rem;font-weight:600;color:white;margin:0;}
+    .card-header p{font-size:0.875rem;color:var(--gray-400);margin-top:0.25rem;}
+    .table-container{overflow-x:auto;}
+    table{width:100%;text-align:left;font-size:0.875rem;color:var(--gray-300);border-collapse:collapse;}
+    thead{font-size:0.75rem;color:var(--gray-400);text-transform:uppercase;background-color:rgba(55,65,81,0.5);}
+    th, td{padding:0.75rem 1.5rem;}
+    tbody tr{background-color:var(--gray-800);border-bottom:1px solid var(--gray-700);transition:background-color 0.2s;}
+    tbody tr:hover{background-color:rgba(55,65,81,0.5);}
+    .actions-cell{display:flex;justify-content:center;align-items:center;gap:0.5rem;}
+    .action-btn{font-weight:500;transition:color 0.2s, background-color 0.2s;padding:0.375rem 0.75rem;border-radius:0.375rem;border:none;cursor:pointer;}
+    .edit-btn{color:var(--blue-400-text);background-color:rgba(37,99,235,0.2);}
+    .edit-btn:hover{color:var(--blue-300-text-hover);background-color:rgba(37,99,235,0.4);}
+    .delete-btn{color:var(--red-400-text);background-color:rgba(220,38,38,0.2);}
+    .delete-btn:hover{color:var(--red-300-text-hover);background-color:rgba(220,38,38,0.4);}
+    .modal-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;z-index:50;display:flex;align-items:center;justify-content:center;background-color:rgba(0,0,0,0.5);}
+    .modal-content{background-color:var(--gray-800);border-radius:0.5rem;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);padding:1.5rem;width:100%;max-width:28rem;}
+    .modal-content h3{font-size:1.125rem;font-weight:600;color:white;margin:0;}
+    .modal-content p{color:var(--gray-400);margin-top:0.5rem;}
+    .modal-actions{margin-top:1.5rem;display:flex;justify-content:flex-end;gap:1rem;}
+    .btn{font-weight:bold;padding:0.5rem 1rem;border:none;border-radius:0.375rem;cursor:pointer;transition:background-color 0.3s;color:white;}
+    .btn-secondary{background-color:var(--gray-600);}
+    .btn-secondary:hover{background-color:var(--gray-700);}
+    .btn-danger{background-color:var(--red-600);}
+    .btn-danger:hover{background-color:var(--red-700);}
+    .btn-primary{background-color:var(--blue-600);}
+    .btn-primary:hover{background-color:var(--blue-700);}
+    .modal-form-fields{margin-top:1rem;display:flex;flex-direction:column;gap:1rem;}
+    .form-input{background-color:var(--gray-700);color:white;border:1px solid var(--gray-600);border-radius:0.375rem;padding:0.5rem 1rem;}
+    .form-input:focus{outline:none;box-shadow:0 0 0 2px var(--blue-500);}
+    .hidden{display:none;}
+    .spinner{animation:spin 1s linear infinite;}
+    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h2>User Accounts</h2>
+      <p>Manage user accounts, last login, and provider.</p>
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Sr. No.</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Provider</th>
+            <th style="text-align:center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <tr id="loadingState">
+            <td colspan="6" style="text-align:center; padding:2rem;">
+              <div style="display:flex; justify-content:center; align-items:center; gap:0.5rem;">
+                <svg class="spinner" style="height:1.25rem; width:1.25rem; color:white;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle style="opacity:0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path style="opacity:0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Loading user data...</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal-backdrop hidden">
+  <div class="modal-content">
+    <h3>Confirm Deletion</h3>
+    <p>Are you sure you want to delete this user? This cannot be undone.</p>
+    <div class="modal-actions">
+      <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+      <button id="confirmDelete" class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editUserModal" class="modal-backdrop hidden">
+  <div class="modal-content">
+    <h3>Edit User</h3>
+    <p>Update the user's details below.</p>
+    <div class="modal-form-fields">
+      <input type="text" id="editNameInput" placeholder="Full Name" class="form-input" required>
+      <input type="email" id="editEmailInput" placeholder="Email Address" class="form-input" required>
+    </div>
+    <div class="modal-actions">
+      <button id="cancelEdit" class="btn btn-secondary">Cancel</button>
+      <button id="saveChanges" class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  // ===== Firebase Config =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
+    authDomain: "fieldproject-21f1d.firebaseapp.com",
+    projectId: "fieldproject-21f1d",
+    storageBucket: "fieldproject-21f1d.appspot.com",
+    messagingSenderId: "211444513819",
+    appId: "1:211444513819:web:28b909dc140cac64944cbe"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // ===== Protect Admin Page =====
+  if(!sessionStorage.getItem("isAdmin")){
+    window.location.replace("adminKey.html");
+    throw new Error("Access denied");
+  }
+
+  // ===== DOM Elements =====
+  const userTableBody = document.getElementById('userTableBody');
+  const deleteModal = document.getElementById('deleteModal');
+  const editUserModal = document.getElementById('editUserModal');
+
+  let userIdToDelete = null;
+  let userIdToEdit = null;
+
+  // ===== Authenticate & Load Users =====
+  signInAnonymously(auth).catch(err => {
+    console.error("Anonymous Auth Failed:", err);
+    userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:#f87171;">Authentication failed</td></tr>`;
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if(!user) return;
+
+    const usersCollection = collection(db,"users");
+
+    onSnapshot(usersCollection, (snapshot)=>{
+      const loading = document.getElementById('loadingState');
+      if(loading) loading.remove();
+
+      userTableBody.innerHTML = '';
+      if(snapshot.empty){
+        userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--gray-400);">No users found.</td></tr>`;
+        return;
+      }
+
+      let srNo = 1;
+      snapshot.docs.forEach(docSnap=>{
+        const userData = docSnap.data();
+        const lastLogin = userData.lastLogin?.toDate ? userData.lastLogin.toDate().toLocaleString() : 'N/A';
+        const tr = document.createElement('tr');
+        tr.innerHTML=`
+          <td>${srNo++}</td>
+          <td>${userData.name || 'N/A'}</td>
+          <td>${userData.email || 'N/A'}</td>
+          <td>${lastLogin}</td>
+          <td>${userData.provider || 'N/A'}</td>
+          <td>
+            <div class="actions-cell">
+              <button data-id="${docSnap.id}" class="action-btn edit-btn">Edit</button>
+              <button data-id="${docSnap.id}" class="action-btn delete-btn">Delete</button>
+            </div>
+          </td>
+        `;
+        userTableBody.appendChild(tr);
+      });
+    }, (error)=>{
+      console.error("Error fetching users:", error);
+      userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:#f87171;">Error fetching users</td></tr>`;
+    });
+  });
+
+  // ===== Delete & Edit =====
+  userTableBody.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.action-btn');
+    if(!btn) return;
+
+    const id = btn.dataset.id;
+    if(btn.classList.contains('delete-btn')){
+      userIdToDelete = id;
+      deleteModal.classList.remove('hidden');
+    }
+    if(btn.classList.contains('edit-btn')){
+      userIdToEdit = id;
+      const docSnap = await getDoc(doc(db,"users",userIdToEdit));
+      if(docSnap.exists()){
+        const data = docSnap.data();
+        document.getElementById('editNameInput').value = data.name || '';
+        document.getElementById('editEmailInput').value = data.email || '';
+        editUserModal.classList.remove('hidden');
+      }
+    }
+  });
+
+  document.getElementById('cancelDelete').addEventListener('click', ()=>{
+    deleteModal.classList.add('hidden'); userIdToDelete=null;
+  });
+  document.getElementById('confirmDelete').addEventListener('click', async ()=>{
+    if(!userIdToDelete) return;
+    await deleteDoc(doc(db,"users",userIdToDelete));
+    deleteModal.classList.add('hidden'); userIdToDelete=null;
+  });
+
+  document.getElementById('cancelEdit').addEventListener('click', ()=>{
+    editUserModal.classList.add('hidden'); userIdToEdit=null;
+  });
+  document.getElementById('saveChanges').addEventListener('click', async ()=>{
+    if(!userIdToEdit) return;
+    const name = document.getElementById('editNameInput').value;
+    const email = document.getElementById('editEmailInput').value;
+    if(!name || !email) return;
+    await updateDoc(doc(db,"users",userIdToEdit),{name,email});
+    editUserModal.classList.add('hidden'); userIdToEdit=null;
+  });
+
+</script>
+</body>
+</html>

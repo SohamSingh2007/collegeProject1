@@ -1,0 +1,477 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: #000000;
+    color: #333;
+    overflow: hidden;
+}
+
+/* ---------- Login Modal ---------- */
+#loginModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.4s ease;
+}
+
+.login-box h2 {
+    margin-bottom: 15px;
+}
+
+.login-box input {
+    width: 90%;
+    padding: 10px;
+    margin: 12px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+.login-box button {
+    background: #111;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-box button:hover {
+    background: #333;
+}
+
+.error-text {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    width: 100%;
+    background: #111;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 25px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    box-shadow: 0 1px 10px rgba(255, 255, 255, 0.5);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    height: 38px;
+    width: 38px;
+}
+
+.logo p {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.logo span {
+    color: #abff2f;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    gap: 18px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+nav a:hover {
+    background: #333;
+}
+
+.dropdown-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 100px;
+    position: relative;
+}
+
+.dropdown-btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 34px;
+    width: 100%;
+    background: #333;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 9px;
+    padding: 8px 14px;
+    border-radius: 5px;
+}
+
+.dropdown-btn:hover {
+    background: #444;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 55px;
+    right: -50px;
+    background: #222;
+    border-radius: 5px;
+    overflow: hidden;
+    flex-direction: column;
+    min-width: 150px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-menu a {
+    padding: 10px 15px;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdown-menu a:hover {
+    background: #333;
+}
+
+.logout-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 100px;
+}
+
+.logout-btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 34px;
+    width: 100%;
+    background: #e74c3c;
+    border: none;
+    padding: 8px 16px;
+    margin-bottom: 9px;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    /* Align icon and text nicely */
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}
+
+/* ---------- Main Content ---------- */
+.main-content {
+    margin-top: 90px;
+    /* padding: 20px; */
+    text-align: center;
+    min-height: calc(100vh - 80px);
+    animation: fadeIn 0.4s ease;
+}
+
+/* ---------- Change Key Modal ---------- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+.modal-content {
+    background: #fff;
+    color: #000;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content input {
+    width: 90%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #000;
+}
+
+.modal-content button {
+    width: 100px;
+    height: 40px;
+    margin-top: 15px;
+    padding: 10px 5px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background: #444;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.input-wrapper {
+    position: relative;
+    width: 90%;
+    margin: 10px auto;
+}
+
+#newKey {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+#toggleNewKey {
+    position: absolute;
+    right: 12px;
+    top: 60%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+    font-size: 16px;
+}
+
+/* ---------- Login Box UI ---------- */
+#loginModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30vw;
+    max-width: 400px;
+    min-width: 280px;
+    background: #000;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+.box h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90px;
+    width: 90px;
+    border-radius: 50%;
+    background-color: silver;
+    margin-bottom: 20px;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+input {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    padding: 10px 50px 10px 15px;
+    outline: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 10px;
+}
+
+input:focus {
+    box-shadow: 0 2px 15px rgba(255, 255, 255, 0.6);
+}
+
+.toggle-eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #fff;
+}
+
+button {
+    margin-top: 10px;
+    padding: 12px 20px;
+    background: #fff;
+    color: #000;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+    height: 50px;
+}
+
+button:hover {
+    background: #abff2f;
+}
+
+#message {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+@media (max-width: 1100px) {
+    .box {
+        width: 80vw;
+        padding: 30px 20px;
+    }
+
+    .box h2 {
+        font-size: 22px;
+    }
+
+    .circle {
+        height: 70px;
+        width: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .box {
+        width: 95vw;
+        padding: 25px 15px;
+    }
+
+    .box h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+nav a.active {
+    background: #abff2f;
+    color: #000;
+    font-weight: 600;
+    transition: background 0.3s, color 0.3s;
+}

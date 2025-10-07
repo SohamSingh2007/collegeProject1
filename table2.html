@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin User Table</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #111827;
+        color: #fff;
+        margin: 0;
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+      }
+      .container {
+        width: 100%;
+        max-width: 1000px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #374151;
+      }
+      th {
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #9ca3af;
+      }
+      tr:hover {
+        background: #1f2937;
+      }
+      button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .edit-btn {
+        background: #3b82f6;
+        color: white;
+      }
+      .delete-btn {
+        background: #dc2626;
+        color: white;
+      }
+      .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+      .modal-content {
+        background: #1f2937;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+      }
+      .modal-content input {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border-radius: 5px;
+        border: none;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Admin Panel: Users</h2>
+      <p>Enter your admin key to view users:</p>
+      <input type="password" id="adminKeyInput" placeholder="Admin Key" />
+      <button id="adminSubmit">Submit</button>
+      <p id="message"></p>
+
+      <table id="userTable" class="hidden">
+        <thead>
+          <tr>
+            <th>Sr. No.</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Last Login</th>
+            <th>Provider</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <tr>
+            <td colspan="6" style="text-align: center">No data loaded.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal-backdrop hidden">
+      <div class="modal-content">
+        <h3>Edit User</h3>
+        <input type="text" id="editName" placeholder="Name" />
+        <input type="email" id="editEmail" placeholder="Email" />
+        <div class="modal-actions">
+          <button id="cancelEdit">Cancel</button>
+          <button id="saveEdit">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        doc,
+        getDoc,
+        getDocs,
+        updateDoc,
+        deleteDoc,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
+        authDomain: "fieldproject-21f1d.firebaseapp.com",
+        projectId: "fieldproject-21f1d",
+        storageBucket: "fieldproject-21f1d.appspot.com",
+        messagingSenderId: "211444513819",
+        appId: "1:211444513819:web:28b909dc140cac64944cbe",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const adminKeyInput = document.getElementById("adminKeyInput");
+      const adminSubmit = document.getElementById("adminSubmit");
+      const message = document.getElementById("message");
+      const userTable = document.getElementById("userTable");
+      const userTableBody = document.getElementById("userTableBody");
+
+      let editUserId = null;
+
+      // 1️⃣ Admin key verification
+      adminSubmit.addEventListener("click", async () => {
+        const key = adminKeyInput.value;
+        if (!key) {
+          message.innerText = "Enter key";
+          message.style.color = "red";
+          return;
+        }
+
+        try {
+          const adminDocSnap = await getDoc(doc(db, "config", "admin"));
+          if (adminDocSnap.exists() && key === adminDocSnap.data().key) {
+            message.innerText = "Access Granted";
+            message.style.color = "limegreen";
+            sessionStorage.setItem("isAdmin", "true");
+            loadUsers();
+          } else {
+            message.innerText = "Access Denied";
+            message.style.color = "red";
+          }
+        } catch (err) {
+          console.error(err);
+          message.innerText = "Error verifying key";
+          message.style.color = "red";
+        }
+      });
+
+      // 2️⃣ Load users
+      async function loadUsers() {
+        userTable.classList.remove("hidden");
+        const usersCol = collection(db, "users");
+        const snapshot = await getDocs(usersCol);
+        userTableBody.innerHTML = "";
+        if (snapshot.empty) {
+          userTableBody.innerHTML =
+            '<tr><td colspan="6" style="text-align:center;">No users found</td></tr>';
+          return;
+        }
+
+        let srNo = 1;
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const lastLogin = data.lastLogin?.toDate
+            ? data.lastLogin.toDate().toLocaleString()
+            : "N/A";
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+      <td>${srNo++}</td>
+      <td>${data.name || "N/A"}</td>
+      <td>${data.email || "N/A"}</td>
+      <td>${lastLogin}</td>
+      <td>${data.provider || "N/A"}</td>
+      <td>
+        <button class="edit-btn" data-id="${docSnap.id}">Edit</button>
+        <button class="delete-btn" data-id="${docSnap.id}">Delete</button>
+      </td>
+    `;
+          userTableBody.appendChild(tr);
+        });
+      }
+
+      // 3️⃣ Table button actions
+      userTableBody.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        if (btn.classList.contains("delete-btn")) {
+          if (confirm("Delete this user?"))
+            await deleteDoc(doc(db, "users", id));
+          loadUsers();
+        }
+
+        if (btn.classList.contains("edit-btn")) {
+          editUserId = id;
+          const docSnap = await getDoc(doc(db, "users", id));
+          if (docSnap.exists()) {
+            document.getElementById("editName").value =
+              docSnap.data().name || "";
+            document.getElementById("editEmail").value =
+              docSnap.data().email || "";
+            document.getElementById("editModal").classList.remove("hidden");
+          }
+        }
+      });
+
+      // 4️⃣ Edit modal
+      document.getElementById("cancelEdit").addEventListener("click", () => {
+        document.getElementById("editModal").classList.add("hidden");
+        editUserId = null;
+      });
+
+      document
+        .getElementById("saveEdit")
+        .addEventListener("click", async () => {
+          if (!editUserId) return;
+          const name = document.getElementById("editName").value;
+          const email = document.getElementById("editEmail").value;
+          if (!name || !email) return alert("Fill both fields");
+          await updateDoc(doc(db, "users", editUserId), { name, email });
+          document.getElementById("editModal").classList.add("hidden");
+          editUserId = null;
+          loadUsers();
+        });
+    </script>
+  </body>
+</html>
