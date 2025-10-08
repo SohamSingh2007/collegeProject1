@@ -3,11 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Complaints Dashboard</title>
+    <title>Feedback Dashboard</title>
 
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
       rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     />
 
     <style>
@@ -26,8 +30,8 @@
         color: var(--text-main);
         margin: 0;
         padding: 20px;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE & Edge */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
       }
 
       ::-webkit-scrollbar {
@@ -36,7 +40,7 @@
       }
 
       .container {
-        max-width: 1000px;
+        max-width: 900px;
         margin: 0 auto;
         background: var(--bg-card);
         padding: 25px;
@@ -59,7 +63,7 @@
         border-collapse: collapse;
         text-align: left;
         color: var(--text-main);
-        min-width: 600px;
+        min-width: 400px;
       }
 
       thead {
@@ -78,13 +82,8 @@
         transition: 0.3s;
       }
 
-      .AllButton {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
       button.btn {
-        background-color: rgb(66, 66, 227);
+        background-color: #3b82f6;
         color: #fff;
         border: none;
         padding: 6px 12px;
@@ -96,12 +95,6 @@
       button.btn:hover {
         transform: scale(1.03);
       }
-      button.btn.start {
-        background-color: #16a34a;
-      }
-      button.btn.start:hover {
-        background-color: #22c55e;
-      }
 
       .loading {
         text-align: center;
@@ -109,7 +102,7 @@
         padding: 20px;
       }
 
-      /* Modal Styles */
+      /* Modal */
       .modal {
         position: fixed;
         top: 0;
@@ -151,116 +144,63 @@
         box-sizing: border-box;
       }
 
+      .stars {
+        color: #6b7280;
+      }
+      .stars i {
+        color: #abff2f;
+        margin-right: 2px;
+      }
+
       .btn.close {
-        background-color: #ef4444;
+        background-color: #ea1d1d;
         color: #fff;
         margin-top: 15px;
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
       }
       .btn.close:hover {
-        background-color: #f87171;
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.9);
+        background-color: #ff0000;
       }
 
-      .status {
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .status.pending {
-        color: #facc15;
-      }
-      .status.started {
-        color: #22c55e;
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        display: inline-block;
-      }
-      .dot.pending {
-        background-color: #facc15;
-      }
-      .dot.started {
-        background-color: #22c55e;
-      }
-
-      /* Pagination */
       #pagination {
         margin-top: 15px;
         text-align: center;
       }
       #pagination button {
         margin: 0 3px;
-      }
-      #prevPage,
-      #nextPage {
         background-color: #3b473f;
       }
-      /* Responsive */
+
       @media (max-width: 768px) {
-        h1 {
-          font-size: 18px;
-        }
-        .subtitle {
-          font-size: 12px;
-        }
         th,
         td {
           padding: 6px 8px;
           font-size: 12px;
         }
       }
-
-      @media (max-width: 480px) {
-        h1 {
-          font-size: 16px;
-        }
-        .subtitle {
-          font-size: 11px;
-        }
-        th,
-        td {
-          padding: 5px 6px;
-          font-size: 10px;
-        }
-        table {
-          min-width: 400px;
-        }
-        button.btn {
-          padding: 3px 6px;
-          font-size: 10px;
-        }
-      }
     </style>
   </head>
+
   <body>
     <div class="container">
-      <h1>All Complaints</h1>
-      <p class="subtitle">Below is the list of submitted complaints.</p>
+      <h1>All Feedback</h1>
+      <p class="subtitle">Below is the list of submitted feedbacks.</p>
 
-      <table id="complaintsTable">
+      <table id="feedbackTable">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Subject</th>
-            <th>Date of Incident</th>
-            <th>Status</th>
+            <th>Topic</th>
+            <th>Rating</th>
+            <th>Submitted On</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="complaintsBody">
+        <tbody id="feedbackBody">
           <tr>
-            <td colspan="6" class="loading">Loading complaints...</td>
+            <td colspan="4" class="loading">Loading feedback...</td>
           </tr>
         </tbody>
       </table>
 
-      <!-- Pagination Controls -->
       <div id="pagination">
         <button id="prevPage" class="btn">Prev</button>
         <span id="pageInfo">Page 1</span>
@@ -271,13 +211,13 @@
     <!-- Modal -->
     <div id="detailsModal" class="modal hidden">
       <div class="modal-content">
-        <h2 style="color: var(--accent)">Complaint Details</h2>
-        <p><strong>Name:</strong> <span id="modalName"></span></p>
-        <p><strong>Email:</strong> <span id="modalEmail"></span></p>
-        <p><strong>Subject:</strong> <span id="modalSubject"></span></p>
-        <p><strong>Date of Incident:</strong> <span id="modalDate"></span></p>
-        <p><strong>Details:</strong></p>
-        <p id="modalDetails" class="details-box"></p>
+        <h2 style="color: var(--accent)">Feedback Details</h2>
+        <p><strong>Topic:</strong> <span id="modalTopic"></span></p>
+        <p>
+          <strong>Rating:</strong> <span id="modalRating" class="stars"></span>
+        </p>
+        <p><strong>Message:</strong></p>
+        <p id="modalMessage" class="details-box"></p>
         <button id="closeModal" class="btn close">Close</button>
       </div>
     </div>
@@ -290,10 +230,9 @@
         onSnapshot,
         orderBy,
         query,
-        doc,
-        updateDoc,
       } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
+      // Firebase config
       const firebaseConfig = {
         apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
         authDomain: "fieldproject-21f1d.firebaseapp.com",
@@ -306,28 +245,26 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      const complaintsBody = document.getElementById("complaintsBody");
+      const feedbackBody = document.getElementById("feedbackBody");
       const modal = document.getElementById("detailsModal");
       const closeModal = document.getElementById("closeModal");
+      const modalTopic = document.getElementById("modalTopic");
+      const modalMessage = document.getElementById("modalMessage");
+      const modalRating = document.getElementById("modalRating");
 
-      const modalName = document.getElementById("modalName");
-      const modalEmail = document.getElementById("modalEmail");
-      const modalSubject = document.getElementById("modalSubject");
-      const modalDate = document.getElementById("modalDate");
-      const modalDetails = document.getElementById("modalDetails");
-
-      // Pagination Variables
       const rowsPerPage = 4;
       let currentPage = 1;
-      let complaintsData = [];
+      let feedbackData = [];
 
+      // Query feedbacks ordered by timestamp descending
       const q = query(
-        collection(db, "complain"),
-        orderBy("dateOfIncident", "desc")
+        collection(db, "feedbacks"),
+        orderBy("timestamp", "desc")
       );
 
+      // Real-time listener
       onSnapshot(q, (snapshot) => {
-        complaintsData = snapshot.docs.map((docSnap) => ({
+        feedbackData = snapshot.docs.map((docSnap) => ({
           id: docSnap.id,
           ...docSnap.data(),
         }));
@@ -335,75 +272,65 @@
         renderPage();
       });
 
+      // Helper: render stars
+      function renderStars(rating) {
+        let starsHtml = "";
+        for (let i = 1; i <= 5; i++) {
+          starsHtml += `<i class="fa-solid fa-star" style="color:${
+            i <= rating ? "#abff2f" : "#6b7280"
+          }"></i>`;
+        }
+        return starsHtml;
+      }
+
       function renderPage() {
-        complaintsBody.innerHTML = "";
-        if (!complaintsData.length) {
-          complaintsBody.innerHTML = `<tr><td colspan="6" class="loading">No complaints found.</td></tr>`;
+        feedbackBody.innerHTML = "";
+        if (!feedbackData.length) {
+          feedbackBody.innerHTML = `<tr><td colspan="4" class="loading">No feedback found.</td></tr>`;
           document.getElementById("pageInfo").textContent = "Page 0";
           return;
         }
 
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
-        const pageData = complaintsData.slice(start, end);
+        const pageData = feedbackData.slice(start, end);
 
         pageData.forEach((data) => {
-          const date = data.dateOfIncident?.toDate
-            ? data.dateOfIncident.toDate()
-            : new Date(data.dateOfIncident);
+          const date = data.timestamp?.toDate
+            ? data.timestamp.toDate()
+            : new Date(data.timestamp);
           const formattedDate = date.toLocaleDateString("en-IN", {
             year: "numeric",
             month: "short",
             day: "numeric",
           });
-          const status = data.status || "Pending";
-          const statusClass = status.toLowerCase();
 
           const row = document.createElement("tr");
           row.innerHTML = `
-      <td>${data.Name || "N/A"}</td>
-      <td>${data.Email || "N/A"}</td>
-      <td>${data.subject || "N/A"}</td>
+      <td>${data.topic || "Other"}</td>
+      <td class="stars">${renderStars(data.rating || 0)}</td>
       <td>${formattedDate}</td>
-      <td><span class="status ${statusClass}"><span class="dot ${statusClass}"></span> ${status}</span></td>
-      <td class="AllButton">
-        <button class="btn start" data-id="${data.id}">Start</button>
-        <button class="btn show" data-id="${data.id}">Show</button>
-      </td>
+      <td><button class="btn show" data-id="${data.id}">Show</button></td>
     `;
 
           row.querySelector(".show").addEventListener("click", () => {
-            modalName.textContent = data.Name || "N/A";
-            modalEmail.textContent = data.Email || "N/A";
-            modalSubject.textContent = data.subject || "N/A";
-            modalDate.textContent = formattedDate;
-            modalDetails.textContent = data.details || "No details provided.";
+            modalTopic.textContent = data.topic || "Other";
+            modalMessage.textContent = data.details || "No message provided.";
+            modalRating.innerHTML = renderStars(data.rating || 0);
             modal.classList.remove("hidden");
           });
 
-          row.querySelector(".start").addEventListener("click", async () => {
-            try {
-              await updateDoc(doc(db, "complain", data.id), {
-                status: "Started",
-              });
-              alert(`Complaint "${data.subject}" marked as Started ✅`);
-            } catch (err) {
-              console.error(err);
-              alert("Failed to update status. Try again.");
-            }
-          });
-
-          complaintsBody.appendChild(row);
+          feedbackBody.appendChild(row);
         });
 
         document.getElementById(
           "pageInfo"
         ).textContent = `Page ${currentPage} of ${Math.ceil(
-          complaintsData.length / rowsPerPage
+          feedbackData.length / rowsPerPage
         )}`;
       }
 
-      // Pagination buttons
+      // Pagination
       document.getElementById("prevPage").addEventListener("click", () => {
         if (currentPage > 1) {
           currentPage--;
@@ -411,13 +338,13 @@
         }
       });
       document.getElementById("nextPage").addEventListener("click", () => {
-        if (currentPage < Math.ceil(complaintsData.length / rowsPerPage)) {
+        if (currentPage < Math.ceil(feedbackData.length / rowsPerPage)) {
           currentPage++;
           renderPage();
         }
       });
 
-      // Modal close
+      // Close modal
       closeModal.addEventListener("click", () => modal.classList.add("hidden"));
       modal.addEventListener("click", (e) => {
         if (e.target === modal) modal.classList.add("hidden");
