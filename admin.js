@@ -54,10 +54,10 @@ if (toggleNewKey && newKeyInput) {
 
 // --- SPA Pages ---
 const pages = {
-  dashboard: `<iframe src="" style="width:100%;height:calc(100vh - 75px);border:none;"></iframe>`,
+  dashboard: `<iframe src="dashboardForAdmin.html" style="width:100%;height:calc(100vh - 75px);border:none;"></iframe>`,
   complains: `<iframe src="showComplain.html" style="width:100%;height:calc(100vh - 75px);border:none;"></iframe>`,
   suggestion: `<iframe src="showFeedback.html" style="width:100%;height:calc(100vh - 75px);border:none;"></iframe>`,
-  users: `<h1>Users</h1><p>Coming soon...</p>`,
+  users: `<h1></h1><p></p>`,
 };
 
 // --- Load Page Function ---

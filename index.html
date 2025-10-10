@@ -6,6 +6,7 @@
     <title>ComplainEasy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="shortcut icon" href="logo.svg" type="svg" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
       rel="stylesheet"
@@ -65,7 +66,7 @@
         </div>
       </nav>
       <div class="menuDropdown">
-        <a href="#" class="quickLink"
+        <a href="index.html" class="quickLink"
           ><i class="fas fa-home"></i><span>Home</span></a
         >
         <a href="profile.html" class="quickLink"
@@ -74,15 +75,19 @@
         <a href="Admin.html" class="quickLink"
           ><i class="fas fa-user-shield"></i><span>Admin</span></a
         >
-        <a href="#" class="quickLink"
+        <a href="track.html" class="quickLink"
           ><i class="fas fa-file-lines"></i><span>Track</span></a
         >
-        <a href="#" class="quickLink"
+        <a href="contactUs.html" class="quickLink"
           ><i class="fas fa-phone"></i><span>Contact Us</span></a
         >
-        <a href="" class="logout" id="logoutBtn">
-          <i class="fas fa-sign-out-alt"></i><span>Logout</span>
-        </a>
+        <a href="aboutDeveloper.html" class="quickLink"
+          ><i class="fa-solid fa-laptop-code"></i
+          ><span>About Developer</span></a
+        >
+        <a href="" class="logout" id="logoutBtn"
+          ><i class="fas fa-sign-out-alt"></i><span>Logout</span></a
+        >
       </div>
 
       <div class="section2">
@@ -244,20 +249,20 @@
               <h4>Quick Links</h4>
               <ul>
                 <li>
-                  <a href="#"><i class="fas fa-home"></i> Home</a>
+                  <a href="index.html"><i class="fas fa-home"></i> Home</a>
                 </li>
                 <li>
-                  <a href="complainForm.html"
+                  <a href="comp.html"
                     ><i class="fas fa-file-alt"></i> File Complaint</a
                   >
                 </li>
                 <li>
-                  <a href="suggestion.html"
+                  <a href="sugg.html"
                     ><i class="fas fa-lightbulb"></i> Suggestion</a
                   >
                 </li>
                 <li>
-                  <a href="#"><i class="fas fa-user-shield"></i> Admin</a>
+                  <a href="Admin.html"><i class="fas fa-user-shield"></i> Admin</a>
                 </li>
               </ul>
             </div>
@@ -285,10 +290,6 @@
 
       <!-- phone bottom tab code -->
       <div class="phoneBottomTab">
-        <div class="bottomTab1">
-          <img src="home.svg" alt="" class="bottomTabIcon" />
-          <p class="bottomTabIconText">Home</p>
-        </div>
         <div class="bottomTab2">
           <img src="track.svg" alt="" class="bottomTabIcon" />
           <p class="bottomTabIconText">Track</p>
@@ -301,6 +302,10 @@
           <img src="profile.svg" alt="" class="bottomTabIcon" />
           <p class="bottomTabIconText">profile</p>
         </div>
+        <div class="bottomTab1">
+          <img src="developer.svg" alt="" class="bottomTabIcon" />
+          <p class="bottomTabIconText">Developer</p>
+        </div>
       </div>
     </div>
     <script src="toolTip.js"></script>
@@ -310,6 +315,7 @@
     <script type="module" src="logout.js"></script>
     <script>
       sessionStorage.removeItem("isAdmin");
+      sessionStorage.removeItem("userEmail");
     </script>
   </body>
 </html>

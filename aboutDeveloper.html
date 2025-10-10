@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Developer - Soham Singh</title>
+
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #121212, #1e1e1e);
+      color: #f1f1f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background: #222;
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+    }
+
+    .profile-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #abff2f;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #abff2f;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      font-size: 16px;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 15px;
+      color: #ddd;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .social-links a {
+      color: #f1f1f1;
+      font-size: 24px;
+      transition: 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #abff2f;
+      transform: scale(1.1);
+    }
+
+    .signature {
+      width: 140px;
+      margin-top: 10px;
+      opacity: 0.8;
+      border-radius: 20px;
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      .profile-img {
+        width: 120px;
+        height: 120px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h3 {
+        font-size: 14px;
+      }
+
+      p {
+        font-size: 14px;
+        text-align: justify;
+      }
+
+      .social-links a {
+        font-size: 20px;
+      }
+
+      .signature {
+        width: 120px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      h3 {
+        font-size: 13px;
+      }
+
+      p {
+        font-size: 13px;
+      }
+
+      .social-links a {
+        font-size: 18px;
+      }
+
+      .signature {
+        width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Developer Photo -->
+    <img src="my_Photo.jpg" alt="Soham Singh" class="profile-img">
+
+    <h1>Soham Singh</h1>
+    <h3>Frontend Developer | Aspiring Software Engineer</h3>
+    <p>
+      Passionate about creating elegant, user-friendly web applications using
+      modern technologies like HTML, CSS and JavaScript. Currently learning
+      web development frameworks and building real-world projects.
+    </p>
+
+    <!-- Social Media Links -->
+    <div class="social-links">
+      <a href="https://www.instagram.com/soham_codez" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/8265009506" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.linkedin.com/in/soham-singh" target="_blank"><i class="fab fa-linkedin"></i></a>
+    </div>
+
+    <!-- Signature -->
+    <img src="my.jpg" alt="Signature" class="signature">
+
+    <footer>
+      © 2025 Soham Singh — All Rights Reserved
+    </footer>
+  </div>
+</body>
+</html>

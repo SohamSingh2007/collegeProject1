@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+      body {
+        background: #000;
+        color: #fff;
+        padding: 20px;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE & Edge */
+      }
+
+      ::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+
+      .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 30px;
+      }
+      .card {
+        background: #111;
+        padding: 20px;
+        border-radius: 12px;
+        flex: 1 1 250px;
+        text-align: center;
+      }
+      .card h2 {
+        font-size: 22px;
+        margin-bottom: 15px;
+        color: #fff;
+      }
+      .card p {
+        font-size: 18px;
+        color: #fff;
+      }
+
+      .main-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .user-table-container {
+        background: #111;
+        padding: 20px;
+        border-radius: 12px;
+        flex: 1 1 400px;
+        min-width: 300px;
+        max-height: 550px;
+        overflow: auto;
+        border-top: 4px solid #3B473F;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #333;
+        font-size: 14px;
+      }
+      th {
+        background: #3B473F;
+        color: #fff;
+        font-weight: 800;
+        position: sticky;
+        top: 0;
+      }
+      tr:nth-child(even) {
+        background: #1a1a1a;
+      }
+      tr:hover {
+        background: #222;
+      }
+
+      .pagination {
+        margin-top: 10px;
+        text-align: center;
+      }
+      .pagination button {
+        margin: 0 3px;
+        padding: 5px 10px;
+        border: none;
+        background: #ffff;
+        color: #000;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .pagination button.active{
+        background: #3B473F;
+        color: #fff;
+        font-weight: 800;
+        font-size: 14px;
+      }
+
+      .chart-container {
+        background: #111;
+        padding: 20px;
+        border-radius: 12px;
+        flex: 1 1 400px;
+        max-width: 500px;
+        text-align: center;
+        border-top: 4px solid #4242E3;
+      }
+      canvas {
+        max-width: 100%;
+      }
+
+      @media (max-width: 900px) {
+        .main-content {
+          flex-direction: column;
+          align-items: center;
+        }
+        .user-table-container,
+        .chart-container {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="card">
+        <h2>Total Complaints</h2>
+        <p id="totalComplaints">0</p>
+      </div>
+      <div class="card">
+        <h2>Total Feedback</h2>
+        <p id="totalFeedback">0</p>
+      </div>
+      <div class="card">
+        <h2>Today</h2>
+        <p id="dateTime"></p>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="user-table-container">
+        <h2>Users</h2>
+        <table id="userTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+      <div class="chart-container">
+        <h2>Complaints Status</h2>
+        <canvas id="complaintChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Firebase + App logic -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        onSnapshot,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+      // ---------- Put your Firebase config here ----------
+      const firebaseConfig = {
+        apiKey: "AIzaSyC64IVQh13WplDDX-clQ1RjaUg_X1MJvcE",
+        authDomain: "fieldproject-21f1d.firebaseapp.com",
+        projectId: "fieldproject-21f1d",
+        storageBucket: "fieldproject-21f1d.appspot.com",
+        messagingSenderId: "211444513819",
+        appId: "1:211444513819:web:28b909dc140cac64944cbe"
+      };
+      // ---------------------------------------------------
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Date/time updater
+      function updateDateTime() {
+        document.getElementById("dateTime").textContent = new Date().toLocaleString();
+      }
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+
+      // Chart initialization (empty at start)
+      const ctx = document.getElementById("complaintChart").getContext("2d");
+      const complaintChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: ["No data"],
+          datasets: [
+            {
+              label: "Complaints",
+              data: [1],
+              backgroundColor: ["#16A34A"],
+              borderColor: "#000",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { color: "#ABFF2F", font: { size: 14 } },
+            },
+          },
+        },
+      });
+
+      // Utility: format date (Firestore Timestamp, Date, or string)
+      function formatDate(value) {
+        try {
+          if (!value) return "";
+          // Firestore Timestamp has toDate()
+          if (typeof value.toDate === "function") {
+            return value.toDate().toLocaleString();
+          }
+          // JS Date
+          if (value instanceof Date) {
+            return value.toLocaleString();
+          }
+          // ISO string or other string
+          if (typeof value === "string") {
+            const d = new Date(value);
+            if (!isNaN(d)) return d.toLocaleString();
+            return value; // fallback: raw string
+          }
+          return String(value);
+        } catch (e) {
+          return String(value);
+        }
+      }
+
+      // ---------- Users table with pagination ----------
+      let users = [];
+      const rowsPerPage = 5;
+      let currentPage = 1;
+
+      function displayUsers() {
+        const tbody = document.getElementById("userTable").querySelector("tbody");
+        tbody.innerHTML = "";
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        users.slice(start, end).forEach((user, index) => {
+          const tr = document.createElement("tr");
+          // Accept a variety of field names (Name / name), (Email / email), (createdAt/CreatedAt)
+          const name = user.Name ?? user.name ?? user.fullName ?? "";
+          const email = user.Email ?? user.email ?? "";
+          const createdRaw = user.createdAt ?? user.CreatedAt ?? user.created ?? user.date ?? "";
+          tr.innerHTML = `<td>${start + index + 1}</td>
+                          <td>${name}</td>
+                          <td>${email}</td>
+                          <td>${formatDate(createdRaw)}</td>`;
+          tbody.appendChild(tr);
+        });
+        displayPagination();
+      }
+
+      function displayPagination() {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        const totalPages = Math.max(1, Math.ceil(users.length / rowsPerPage));
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = i;
+          if (i === currentPage) btn.classList.add("active");
+          btn.addEventListener("click", () => {
+            currentPage = i;
+            displayUsers();
+          });
+          pagination.appendChild(btn);
+        }
+      }
+
+      // Real-time listener for users collection
+      try {
+        onSnapshot(collection(db, "users"), (snapshot) => {
+          users = [];
+          snapshot.forEach((doc) => {
+            users.push({ id: doc.id, ...doc.data() });
+          });
+          // reset to first page whenever data changes
+          currentPage = 1;
+          displayUsers();
+        }, (err) => {
+          console.error("Users snapshot error:", err);
+        });
+      } catch (e) {
+        console.error("Users listener failed:", e);
+      }
+
+      // ---------- Complaints -> update chart & total ----------
+      function updateComplaintsChartAndCount(docs) {
+        // Count by status (normalize)
+        const counts = {};
+        docs.forEach((d) => {
+          const data = d.data();
+          // status field naming can vary (status / Status)
+          let st = data.status ?? data.Status ?? data.state ?? "Unknown";
+          if (!st) st = "Unknown";
+          st = String(st).trim();
+          // Normalize some variants (common)
+          if (/complete/i.test(st)) st = "Complete";
+          else if (/pending/i.test(st)) st = "Pending";
+          else if (/new/i.test(st)) st = "New";
+          else if (/started/i.test(st)) st = "Started";
+          // else keep the literal value
+          counts[st] = (counts[st] || 0) + 1;
+        });
+
+        // Build labels & data arrays sorted (prefer common statuses in a nice order)
+        const preferred = ["Complete", "Pending", "Started", "New"];
+        const labels = [];
+        const data = [];
+        const colors = [];
+        preferred.forEach((p) => {
+          if (counts[p]) {
+            labels.push(p);
+            data.push(counts[p]);
+            // choose theme colors for common statuses
+            if (p === "Complete") colors.push("#16A34A");
+            else if (p === "Pending") colors.push("#FACC15");
+            else if (p === "Started") colors.push("#4242E3");
+            else if (p === "New") colors.push("#FF6B6B");
+          }
+        });
+        // Add any other custom statuses after preferred
+        Object.keys(counts).forEach((k) => {
+          if (!preferred.includes(k)) {
+            labels.push(k);
+            data.push(counts[k]);
+            colors.push("#888"); // fallback color
+          }
+        });
+
+        // If no data, show placeholder
+        if (labels.length === 0) {
+          complaintChart.data.labels = ["No data"];
+          complaintChart.data.datasets[0].data = [1];
+          complaintChart.data.datasets[0].backgroundColor = ["#444"];
+          document.getElementById("totalComplaints").textContent = "0";
+        } else {
+          complaintChart.data.labels = labels;
+          complaintChart.data.datasets[0].data = data;
+          complaintChart.data.datasets[0].backgroundColor = colors;
+          document.getElementById("totalComplaints").textContent = data.reduce((a,b)=>a+b,0);
+        }
+        complaintChart.update();
+      }
+
+      // Real-time listener for complain collection
+      try {
+        onSnapshot(collection(db, "complain"), (snapshot) => {
+          updateComplaintsChartAndCount(snapshot.docs);
+        }, (err) => {
+          console.error("Complaints snapshot error:", err);
+        });
+      } catch (e) {
+        console.error("Complaints listener failed:", e);
+      }
+
+      // ---------- Total feedback (one-time read) ----------
+      (async function fetchFeedbackCount(){
+        try {
+          const snap = await getDocs(collection(db, "feedbacks"));
+          document.getElementById("totalFeedback").textContent = snap.size;
+        } catch (e) {
+          console.error("Feedbacks read failed:", e);
+        }
+      })();
+    </script>
+  </body>
+</html>

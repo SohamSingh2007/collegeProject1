@@ -49,6 +49,7 @@ signupForm?.querySelector(".submit-button")?.addEventListener("click", async (e)
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(userCredential.user, { displayName: name });
     await saveUserData(userCredential.user, name, true);
+    sessionStorage.setItem("userEmail", userCredential.user.email);
 
     alert("Signup successful!");
     window.location.href = "authentication.html";
@@ -69,8 +70,9 @@ loginForm?.querySelector(".submit-button")?.addEventListener("click", async (e) 
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
     await saveUserData(result.user, null, false);
-
+    
     alert("Login successful!");
+    sessionStorage.setItem("userEmail", result.user.email);
     window.location.href = "index.html";
   } catch (error) {
     alert(error.message);
@@ -116,6 +118,7 @@ async function handleGoogleLogin() {
 
     await saveUserData(user, null, false);
     alert("Login with Google successful!");
+    sessionStorage.setItem("userEmail", user.email);
     window.location.href = "index.html";
   } catch (error) {
     alert(error.message);
