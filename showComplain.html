@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Complaints Dashboard</title>
+    <title>ComplainEasy: Complaints</title>
+    <link rel="shortcut icon" href="logo.svg" type="svg">
 
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
@@ -26,8 +27,8 @@
         color: var(--text-main);
         margin: 0;
         padding: 20px;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE & Edge */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
       }
 
       ::-webkit-scrollbar {
@@ -97,11 +98,9 @@
       button.btn:hover {
         transform: scale(1.03);
       }
-      button.btn.start {
-        background-color: #16a34a;
-      }
-      button.btn.start:hover {
-        background-color: #22c55e;
+      button.btn.show {
+        background-color: #fff;
+        color: #000000;
       }
 
       .loading {
@@ -110,7 +109,7 @@
         padding: 20px;
       }
 
-      /* Modal Styles */
+      /* Modal */
       .modal {
         position: fixed;
         top: 0;
@@ -128,6 +127,7 @@
         display: none;
       }
       .modal-content {
+        position: relative;
         background: var(--bg-card);
         padding: 25px;
         border-radius: 12px;
@@ -137,6 +137,21 @@
         color: var(--text-main);
         max-height: 90vh;
         overflow-y: auto;
+      }
+
+      .close-icon {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 22px;
+        color: #ef4444;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+      .close-icon:hover {
+        color: #f87171;
+        transform: scale(1.2);
       }
 
       .details-box {
@@ -152,28 +167,28 @@
         box-sizing: border-box;
       }
 
-      .btn.close {
-        background-color: #ef4444;
-        color: #fff;
-        margin-top: 15px;
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
-      }
-      .btn.close:hover {
-        background-color: #f87171;
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.9);
-      }
-
       .status {
         font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 6px;
       }
+
+      /* STATUS COLORS */
+      .status.new {
+        color: #fbbf24;
+      }
       .status.pending {
         color: #facc15;
       }
       .status.started {
+        color: #3b82f6;
+      }
+      .status.completed {
         color: #22c55e;
+      }
+      .status.rejected {
+        color: #ef4444;
       }
 
       .dot {
@@ -182,11 +197,20 @@
         border-radius: 50%;
         display: inline-block;
       }
+      .dot.new {
+        background-color: #fbbf24;
+      }
       .dot.pending {
         background-color: #facc15;
       }
       .dot.started {
+        background-color: #3b82f6;
+      }
+      .dot.completed {
         background-color: #22c55e;
+      }
+      .dot.rejected {
+        background-color: #ef4444;
       }
 
       /* Pagination */
@@ -201,43 +225,9 @@
       #nextPage {
         background-color: #3b473f;
       }
-      /* Responsive */
-      @media (max-width: 768px) {
-        h1 {
-          font-size: 18px;
-        }
-        .subtitle {
-          font-size: 12px;
-        }
-        th,
-        td {
-          padding: 6px 8px;
-          font-size: 12px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        h1 {
-          font-size: 16px;
-        }
-        .subtitle {
-          font-size: 11px;
-        }
-        th,
-        td {
-          padding: 5px 6px;
-          font-size: 10px;
-        }
-        table {
-          min-width: 400px;
-        }
-        button.btn {
-          padding: 3px 6px;
-          font-size: 10px;
-        }
-      }
     </style>
   </head>
+
   <body>
     <div class="container">
       <h1>All Complaints</h1>
@@ -261,7 +251,6 @@
         </tbody>
       </table>
 
-      <!-- Pagination Controls -->
       <div id="pagination">
         <button id="prevPage" class="btn">Prev</button>
         <span id="pageInfo">Page 1</span>
@@ -272,6 +261,7 @@
     <!-- Modal -->
     <div id="detailsModal" class="modal hidden">
       <div class="modal-content">
+        <span class="close-icon" id="closeModal">&times;</span>
         <h2 style="color: var(--accent)">Complaint Details</h2>
         <p><strong>Name:</strong> <span id="modalName"></span></p>
         <p><strong>Email:</strong> <span id="modalEmail"></span></p>
@@ -279,7 +269,13 @@
         <p><strong>Date of Incident:</strong> <span id="modalDate"></span></p>
         <p><strong>Details:</strong></p>
         <p id="modalDetails" class="details-box"></p>
-        <button id="closeModal" class="btn close">Close</button>
+        <hr style="border-color: var(--border); margin: 15px 0" />
+        <h3 style="color: var(--accent)">Update Status</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap">
+          <button class="btn statusBtn" data-status="Started" style="background-color: #3b82f6;">Start</button>
+          <button class="btn statusBtn" data-status="Completed" style="background-color: #22c55e">Completed</button>
+          <button class="btn statusBtn" data-status="Rejected" style="background-color: #ef4444">Rejected</button>
+        </div>
       </div>
     </div>
 
@@ -317,21 +313,24 @@
       const modalDate = document.getElementById("modalDate");
       const modalDetails = document.getElementById("modalDetails");
 
-      // Pagination Variables
+      let currentComplaintId = null;
+
       const rowsPerPage = 3;
       let currentPage = 1;
       let complaintsData = [];
 
-      const q = query(
-        collection(db, "complain"),
-        orderBy("dateOfIncident", "desc")
-      );
+      const q = query(collection(db, "complain"), orderBy("dateOfIncident", "desc"));
 
-      onSnapshot(q, (snapshot) => {
-        complaintsData = snapshot.docs.map((docSnap) => ({
-          id: docSnap.id,
-          ...docSnap.data(),
-        }));
+      onSnapshot(q, async (snapshot) => {
+        complaintsData = [];
+        for (const docSnap of snapshot.docs) {
+          const data = { id: docSnap.id, ...docSnap.data() };
+          if (!data.status) {
+            await updateDoc(doc(db, "complain", data.id), { status: "New" });
+            data.status = "New";
+          }
+          complaintsData.push(data);
+        }
         currentPage = 1;
         renderPage();
       });
@@ -357,21 +356,20 @@
             month: "short",
             day: "numeric",
           });
-          const status = data.status || "Pending";
+          const status = data.status || "New";
           const statusClass = status.toLowerCase();
 
           const row = document.createElement("tr");
           row.innerHTML = `
-      <td>${data.Name || "N/A"}</td>
-      <td>${data.Email || "N/A"}</td>
-      <td>${data.subject || "N/A"}</td>
-      <td>${formattedDate}</td>
-      <td><span class="status ${statusClass}"><span class="dot ${statusClass}"></span> ${status}</span></td>
-      <td class="AllButton">
-        <button class="btn start" data-id="${data.id}">Start</button>
-        <button class="btn show" data-id="${data.id}">Show</button>
-      </td>
-    `;
+            <td>${data.Name || "N/A"}</td>
+            <td>${data.Email || "N/A"}</td>
+            <td>${data.subject || "N/A"}</td>
+            <td>${formattedDate}</td>
+            <td><span class="status ${statusClass}"><span class="dot ${statusClass}"></span> ${status}</span></td>
+            <td class="AllButton">
+              <button class="btn show" data-id="${data.id}">Show</button>
+            </td>
+          `;
 
           row.querySelector(".show").addEventListener("click", () => {
             modalName.textContent = data.Name || "N/A";
@@ -379,38 +377,23 @@
             modalSubject.textContent = data.subject || "N/A";
             modalDate.textContent = formattedDate;
             modalDetails.textContent = data.details || "No details provided.";
+            currentComplaintId = data.id;
             modal.classList.remove("hidden");
-          });
-
-          row.querySelector(".start").addEventListener("click", async () => {
-            try {
-              await updateDoc(doc(db, "complain", data.id), {
-                status: "Started",
-              });
-              alert(`Complaint "${data.subject}" marked as Started ✅`);
-            } catch (err) {
-              console.error(err);
-              alert("Failed to update status. Try again.");
-            }
           });
 
           complaintsBody.appendChild(row);
         });
 
-        document.getElementById(
-          "pageInfo"
-        ).textContent = `Page ${currentPage} of ${Math.ceil(
-          complaintsData.length / rowsPerPage
-        )}`;
+        document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${Math.ceil(complaintsData.length / rowsPerPage)}`;
       }
 
-      // Pagination buttons
       document.getElementById("prevPage").addEventListener("click", () => {
         if (currentPage > 1) {
           currentPage--;
           renderPage();
         }
       });
+
       document.getElementById("nextPage").addEventListener("click", () => {
         if (currentPage < Math.ceil(complaintsData.length / rowsPerPage)) {
           currentPage++;
@@ -418,7 +401,22 @@
         }
       });
 
-      // Modal close
+      // ✅ Working status update logic
+      document.querySelectorAll(".statusBtn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (!currentComplaintId) return;
+          const newStatus = btn.getAttribute("data-status");
+          try {
+            await updateDoc(doc(db, "complain", currentComplaintId), { status: newStatus });
+            alert(`Status updated to ${newStatus} ✅`);
+            modal.classList.add("hidden");
+          } catch (err) {
+            console.error(err);
+            alert("Failed to update status. Check console.");
+          }
+        });
+      });
+
       closeModal.addEventListener("click", () => modal.classList.add("hidden"));
       modal.addEventListener("click", (e) => {
         if (e.target === modal) modal.classList.add("hidden");

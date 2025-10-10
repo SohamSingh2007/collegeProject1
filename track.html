@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Complaints</title>
+  <title>ComplainEasy: Track</title>
+  <link rel="shortcut icon" href="logo.svg" type="svg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -22,6 +23,7 @@
       margin: auto;
     }
     .complaint-card {
+      position: relative;
       background-color: #121212;
       padding: 20px;
       margin-bottom: 20px;
@@ -46,6 +48,24 @@
       font-size: 0.85em;
       color: #888;
     }
+    .status-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #000000;
+    }
+
+    /* Status colors */
+    .submitted { background-color: #f1c40f; } /* Yellow */
+    .started { background-color: #3498db; }   /* Blue */
+    .rejected { background-color: #e74c3c; }  /* Red */
+    .completed { background-color: #2ecc71; } /* Green */
+
     .no-complaints {
       text-align: center;
       color: #777;
@@ -81,7 +101,6 @@
     const complaintsContainer = document.getElementById("complaintsContainer");
     const noComplaints = document.getElementById("noComplaints");
 
-    // Check if user is logged in
     auth.onAuthStateChanged(user => {
       if (user) {
         fetchMyComplaints(user.email);
@@ -101,15 +120,28 @@
           }
 
           noComplaints.style.display = "none";
+          complaintsContainer.innerHTML = "";
+
           snapshot.forEach(doc => {
             const data = doc.data();
             const card = document.createElement("div");
             card.className = "complaint-card";
 
-            const createdAtText = data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate().toLocaleString() : data.createdAt) : '';
-            const incidentDateText = data.dateOfIncident ? (data.dateOfIncident.toDate ? data.dateOfIncident.toDate().toLocaleString() : data.dateOfIncident) : '';
+            // Handle Firestore timestamps
+            const createdAtText = data.createdAt ? 
+              (data.createdAt.toDate ? data.createdAt.toDate().toLocaleString() : data.createdAt) : '';
+            const incidentDateText = data.dateOfIncident ? 
+              (data.dateOfIncident.toDate ? data.dateOfIncident.toDate().toLocaleString() : data.dateOfIncident) : '';
+
+            // Map Firestore status to display + color
+            let status = (data.status || "New").toLowerCase();
+            if (status === "new") status = "submitted"; // show as Submitted if status = New
+
+            // Capitalize display name
+            const displayStatus = status.charAt(0).toUpperCase() + status.slice(1);
 
             card.innerHTML = `
+              <div class="status-badge ${status}">${displayStatus}</div>
               <h3>${data.subject || "No Subject"}</h3>
               <p>${data.details || ""}</p>
               <p class="date"><strong>Submitted:</strong> ${createdAtText}</p>
