@@ -326,50 +326,30 @@
 
       // ---------- Complaints -> update chart & total ----------
       function updateComplaintsChartAndCount(docs) {
-        // Count by status (normalize)
+        // Count by status
         const counts = {};
         docs.forEach((d) => {
           const data = d.data();
-          // status field naming can vary (status / Status)
           let st = data.status ?? data.Status ?? data.state ?? "Unknown";
           if (!st) st = "Unknown";
-          st = String(st).trim();
-          // Normalize some variants (common)
-          if (/complete/i.test(st)) st = "Complete";
-          else if (/pending/i.test(st)) st = "Pending";
-          else if (/new/i.test(st)) st = "New";
-          else if (/started/i.test(st)) st = "Started";
-          // else keep the literal value
+          st = String(st).trim().toLowerCase();
+
+          // Map to our desired statuses
+          if (st.includes("new")) st = "New";
+          else if (st.includes("started")) st = "Started";
+          else if (st.includes("complete")) st = "Complete";
+          else if (st.includes("rejected")) st = "Rejected";
+          else return; // ignore any other status
+
           counts[st] = (counts[st] || 0) + 1;
         });
 
-        // Build labels & data arrays sorted (prefer common statuses in a nice order)
-        const preferred = ["Complete", "Pending", "Started", "New"];
-        const labels = [];
-        const data = [];
-        const colors = [];
-        preferred.forEach((p) => {
-          if (counts[p]) {
-            labels.push(p);
-            data.push(counts[p]);
-            // choose theme colors for common statuses
-            if (p === "Complete") colors.push("#16A34A");
-            else if (p === "Pending") colors.push("#FACC15");
-            else if (p === "Started") colors.push("#4242E3");
-            else if (p === "New") colors.push("#FF6B6B");
-          }
-        });
-        // Add any other custom statuses after preferred
-        Object.keys(counts).forEach((k) => {
-          if (!preferred.includes(k)) {
-            labels.push(k);
-            data.push(counts[k]);
-            colors.push("#888"); // fallback color
-          }
-        });
+        const labels = ["New", "Started", "Complete", "Rejected"];
+        const data = labels.map(l => counts[l] || 0);
+        const colors = ["#fbbf24", "#3b82f6", "#22c55e", "#ef4444"];
 
-        // If no data, show placeholder
-        if (labels.length === 0) {
+        // If all zeros, show placeholder
+        if (data.every(v => v === 0)) {
           complaintChart.data.labels = ["No data"];
           complaintChart.data.datasets[0].data = [1];
           complaintChart.data.datasets[0].backgroundColor = ["#444"];
@@ -380,6 +360,7 @@
           complaintChart.data.datasets[0].backgroundColor = colors;
           document.getElementById("totalComplaints").textContent = data.reduce((a,b)=>a+b,0);
         }
+
         complaintChart.update();
       }
 
