@@ -2,7 +2,7 @@ document.querySelector(".bottomTab1").addEventListener("click", function () {
     window.location.href = "aboutDeveloper.html";
 });
 document.querySelector(".bottomTab2").addEventListener("click", function () {
-    window.location.href = "track.html";
+    window.location.href = "track1.html";
 });
 document.querySelector(".bottomTab3").addEventListener("click", function () {
     window.location.href = "contactUs.html";
